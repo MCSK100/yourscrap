@@ -15,6 +15,15 @@ const stats = [
   { value: '98%', label: 'Customer Satisfaction' },
 ];
 
+const scrapCategories = [
+  { icon: '🔩', title: 'Iron & Steel', description: 'Old pipes, utensils, construction waste', color: 'from-orange-500 to-red-500' },
+  { icon: '🔌', title: 'Copper', description: 'Wires, pipes, electrical components', color: 'from-amber-600 to-yellow-500' },
+  { icon: '⚙️', title: 'Aluminum', description: 'Cans, foil, kitchenware', color: 'from-blue-400 to-cyan-400' },
+  { icon: '🎺', title: 'Brass', description: 'Fittings, decorative items, old jewelry', color: 'from-yellow-500 to-orange-500' },
+  { icon: '🧴', title: 'Plastic', description: 'PET bottles, containers, wrappers', color: 'from-green-400 to-emerald-500' },
+  { icon: '📰', title: 'Paper', description: 'Newspapers, cardboard, books', color: 'from-stone-400 to-neutral-400' },
+];
+
 const features = [
   { icon: '⚡', title: 'Instant Booking', description: 'Book your pickup in under 60 seconds. No calls, no waiting.', ta: 'உடனடி முன்பதிவு' },
   { icon: '💰', title: 'Fair Prices', description: 'Get real-time market rates for your scrap. No hidden fees.', ta: 'சரியான விலை' },
@@ -126,7 +135,6 @@ function Hero({ lang, setLang }) {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4">
       <div className="absolute inset-0 bg-gradient-to-br from-[#0d1a0d] via-[#1a2e1a] to-[#0a150a]" />
 
-      {/* Premium aurora backdrop */}
       <AuroraBackground className="opacity-95" intensity={1} enableMouseFollow={true} />
 
       <FloatingOrb className="w-64 md:w-96 h-64 md:h-96 bg-[#98FF98]/10 -top-10 md:-top-20 -left-20" delay={0} />
@@ -177,6 +185,138 @@ function Hero({ lang, setLang }) {
           </div>
         </div>
       </section>
+  );
+}
+
+function ScrapCarousel({ lang }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % scrapCategories.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="relative py-12 md:py-20 bg-black overflow-hidden">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 md:mb-12">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
+            {lang === 'en' ? 'We Accept All Scrap' : 'எல்லாவிதமான குப்பைகளையும் வாங்குவோம்'}
+          </h2>
+          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+            {lang === 'en' 
+              ? 'From household items to industrial waste. Schedule a pickup and earn money while saving the environment.'
+              : 'வீட்டு பொருட்கள் முதல் தொழிற்பட்டை வரை. pickupக்கு முன்பதிவு செய்து பணம் சம்பாதித்து சுற்றுச்சூழலை பாதுகாக்கவும்.'
+            }
+          </p>
+        </motion.div>
+
+        <div className="relative">
+          <div className="overflow-hidden rounded-3xl">
+            <motion.div 
+              className="flex transition-transform duration-500"
+              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            >
+              {scrapCategories.map((category, index) => (
+                <div key={index} className="w-full flex-shrink-0">
+                  <div className={`p-8 md:p-16 rounded-3xl bg-gradient-to-br ${category.color} relative overflow-hidden`}>
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="relative z-10 flex flex-col items-center justify-center text-center">
+                      <div className="text-6xl md:text-8xl mb-4">{category.icon}</div>
+                      <h3 className="text-2xl md:text-4xl font-bold text-white mb-2">{category.title}</h3>
+                      <p className="text-white/80 text-sm md:text-lg max-w-md">{category.description}</p>
+                      <Link 
+                        to="/book"
+                        className="mt-6 px-6 py-3 rounded-full bg-white/20 backdrop-blur-md text-white font-semibold hover:bg-white/30 transition-colors"
+                      >
+                        {lang === 'en' ? 'Book Now' : 'முன்பதிவு செய்'}
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          <div className="flex justify-center gap-2 mt-6">
+            {scrapCategories.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all ${index === currentIndex ? 'bg-[#98FF98] w-8' : 'bg-slate-600'}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mt-8 md:mt-12">
+          {scrapCategories.map((category, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="p-3 md:p-4 rounded-2xl bg-[#0a150a] border border-[#98FF98]/10 hover:border-[#98FF98]/30 transition-all text-center cursor-pointer"
+              onClick={() => setCurrentIndex(i)}
+            >
+              <div className="text-2xl md:text-3xl mb-1">{category.icon}</div>
+              <div className="text-xs md:text-sm font-medium text-white">{category.title}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EnvironmentalImpact({ lang }) {
+  const impacts = [
+    { value: '75%', label: 'Energy Saved', desc: 'Recycling steel saves 75% energy vs new production', icon: '⚡' },
+    { value: '95%', label: 'Aluminum Saved', desc: 'Recycling aluminum saves 95% energy', icon: '🔄' },
+    { value: '86%', label: 'Less Pollution', desc: 'Air pollution reduced by 86%', icon: '🌿' },
+    { value: '40%', label: 'Water Saved', desc: 'Water usage reduced by 40%', icon: '💧' },
+  ];
+
+  return (
+    <section className="relative py-12 md:py-20 bg-[#051005]">
+      <FloatingOrb className="w-48 md:w-72 h-48 md:h-72 bg-[#98FF98]/10 top-1/4 -left-20 md:-left-36" delay={2} />
+      <FloatingOrb className="w-40 md:w-56 h-40 md:h-56 bg-[#B2AC88]/10 bottom-1/4 -right-20 md:-right-36" delay={4} />
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 md:mb-16">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
+            {lang === 'en' ? 'Why Recycle?' : 'ஏன் மறுசுழற்ற வேண்டும்?'}
+          </h2>
+          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+            {lang === 'en'
+              ? 'Every ton of recycled scrap helps conserve natural resources and reduces environmental impact.'
+              : 'ஒரு டன் மறுசுழற்றப்பட்ட குப்பை சுற்றுச்சூழல் தாக்கத்தைக் குறைக்க உதவுகிறது.'
+            }
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {impacts.map((impact, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="p-4 md:p-6 rounded-2xl bg-[#0a150a] border border-[#98FF98]/20 hover:border-[#98FF98]/40 transition-all text-center"
+            >
+              <div className="text-3xl md:text-4xl mb-2">{impact.icon}</div>
+              <div className="text-2xl md:text-3xl font-bold text-[#98FF98] mb-1">{impact.value}</div>
+              <div className="text-sm md:text-base font-semibold text-white mb-1">{impact.label}</div>
+              <div className="text-xs md:text-sm text-slate-400">{impact.desc}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -268,11 +408,9 @@ function Pricing({ lang }) {
 function CTA({ lang }) {
   return (
     <section className="relative py-12 md:py-20 lg:py-32 overflow-hidden">
-      {/* realtime light waves */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-r from-[#98FF98] via-[#B2AC88] to-[#98FF98] opacity-95" />
 
-        {/* wave layers */}
         <div
           className="absolute inset-0"
           style={{
@@ -299,11 +437,9 @@ function CTA({ lang }) {
 
         <div className="absolute inset-0 bg-black/10" />
 
-        {/* moving shine */}
         <div className="absolute -left-1/4 top-0 h-full w-2/3 rotate-6 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-70 animate-[bbw-shine_4.5s_ease-in-out_infinite]" />
       </div>
 
-      {/* local keyframes */}
       <style>{`
         @keyframes bbw-drift {
           0% { transform: translate3d(0,0,0) scale(1); }
@@ -333,7 +469,6 @@ function CTA({ lang }) {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
-            {/* primary */}
             <Link
               to="/book"
               className="group relative inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-bold rounded-full bg-gradient-to-r from-[#98FF98] to-[#B2AC88] text-black shadow-[0_0_30px_rgba(152,255,152,0.45)] hover:shadow-[0_0_45px_rgba(152,255,152,0.6)] transition-all"
@@ -344,7 +479,6 @@ function CTA({ lang }) {
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-white/0 via-white/35 to-white/0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 rounded-full" />
             </Link>
 
-            {/* secondary */}
             <Link
               to="/register"
               className="inline-flex items-center justify-center gap-2 px-6 md:py-4 py-3 md:px-8 text-sm md:text-base font-bold rounded-full border border-white/40 bg-white/10 text-black hover:bg-white/20 transition-all shadow-[0_0_18px_rgba(152,255,152,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50"
@@ -394,6 +528,8 @@ export default function Landing() {
       </Link>
 
       <Hero lang={lang} setLang={setLang} />
+      <ScrapCarousel lang={lang} />
+      <EnvironmentalImpact lang={lang} />
       <Features lang={lang} />
       <HowItWorks lang={lang} />
       <Pricing lang={lang} />
