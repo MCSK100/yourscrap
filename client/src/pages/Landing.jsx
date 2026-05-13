@@ -47,7 +47,7 @@ const priceRates = [
 ];
 
 const LeafIcon = () => (
-  <img src="./src/scraplogo.png" alt="YourScrap" className="w-14 md:w-16" />
+  <img src="/scraplogo.png" alt="YourScrap" className="w-14 md:w-16" />
 );
 
 const whatsAppIcon = (
