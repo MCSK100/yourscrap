@@ -347,6 +347,97 @@ function Features({ lang }) {
   );
 }
 
+function Services({ lang }) {
+  const services = [
+    {
+      title: 'Metal Scrap',
+      titleTa: 'உலோக குப்பை',
+      description: 'Iron, steel, copper, aluminum, brass — we recycle all metals at competitive rates.',
+      descriptionTa: 'இரும்பு, எஃகு, செம்பு, அலுமினியம், பித்தளை — அனைத்து உலோகங்களையும் சிறந்த விலையில் மறுசுழற்றுகிறோம்.',
+      image: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?w=900&q=85&auto=format&fit=crop',
+      alt: 'Scrap metal collection service — clean recycled metal parts',
+    },
+    {
+      title: 'Paper & Cardboard',
+      titleTa: 'காகிதம் & அட்டை',
+      description: 'Newspapers, cardboard boxes, office paper, books — we take it all for recycling.',
+      descriptionTa: 'செய்தித்தாள்கள், அட்டை பெட்டிகள், அலுவலக காகிதம், புத்தகங்கள் — அனைத்தையும் மறுசுழற்சிக்கு எடுத்துக்கொள்கிறோம்.',
+      image: 'https://images.unsplash.com/photo-1605600659873-2d8f5d65f29c?w=900&q=85&auto=format&fit=crop',
+      alt: 'Paper and cardboard recycling service — stacked organized cardboard',
+    },
+    {
+      title: 'E-Waste',
+      titleTa: 'மின்னணு கழிவு',
+      description: 'Old monitors, circuit boards, phones, laptops — responsibly recycled and disposed.',
+      descriptionTa: 'பழைய மானிட்டர்கள், சர்க்யூட் போர்டுகள், போன்கள், லேப்டாப்கள் — பொறுப்புடன் மறுசுழற்றப்படுகிறது.',
+      image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=900&q=85&auto=format&fit=crop',
+      alt: 'E-waste recycling service — circuit boards and old monitors',
+    },
+  ];
+
+  return (
+    <section className="relative py-12 md:py-20 lg:py-32 bg-black">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-8 md:mb-16"
+        >
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
+            {lang === 'en' ? 'Our' : 'எங்கள்'}{' '}
+            <span className="bg-gradient-to-r from-[#98FF98] to-[#B2AC88] bg-clip-text text-transparent">
+              {lang === 'en' ? 'Services' : 'சேவைகள்'}
+            </span>
+          </h2>
+          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+            {lang === 'en'
+              ? 'Professional scrap collection and recycling services tailored to your needs.'
+              : 'உங்கள் தேவைகளுக்கு ஏற்ற தொழில்முறை குப்பை சேகரிப்பு மற்றும் மறுசுழற்சி சேவைகள்.'
+            }
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          {services.map((service, i) => (
+            <motion.div
+              key={service.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.15 }}
+              whileHover={{ y: -4 }}
+              className="group relative rounded-3xl border border-[#B2AC88] overflow-hidden h-[380px] md:h-[520px]"
+            >
+              <img
+                src={service.image}
+                alt={service.alt}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 backdrop-blur-md bg-white/5 border-t border-white/10 rounded-b-3xl">
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+                  {lang === 'en' ? service.title : service.titleTa}
+                </h3>
+                <p className="text-sm md:text-base text-slate-300 mb-4">
+                  {lang === 'en' ? service.description : service.descriptionTa}
+                </p>
+                <Link
+                  to="/book"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#98FF98] text-black text-sm font-semibold hover:bg-[#7bdc78] transition-colors"
+                >
+                  {lang === 'en' ? 'Get Quote →' : 'விலை பெற →'}
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function HowItWorks({ lang }) {
   return (
     <section className="relative py-12 md:py-20 lg:py-32 bg-black">
@@ -531,6 +622,7 @@ export default function Landing() {
       <ScrapCarousel lang={lang} />
       <EnvironmentalImpact lang={lang} />
       <Features lang={lang} />
+      <Services lang={lang} />
       <HowItWorks lang={lang} />
       <Pricing lang={lang} />
       <CTA lang={lang} />
