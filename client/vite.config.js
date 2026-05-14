@@ -8,31 +8,31 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['icons/icon-192.svg', 'icons/icon-512.svg'],
+      includeAssets: ['scraplogo.png', 'fav-scrap.png', 'og-scrap.png'],
       manifest: {
-        name: 'Eco Scrap Platform',
-        short_name: 'EcoScrap',
-        description: 'A sustainable scrap collection PWA for customers and admins.',
-        theme_color: '#10b981',
-        background_color: '#f8fafc',
+        name: 'YourScrap - Turn Trash Into Cash',
+        short_name: 'YourScrap',
+        description: 'Book scrap pickups, earn money, and save the environment.',
+        theme_color: '#98FF98',
+        background_color: '#000000',
         display: 'standalone',
         scope: '/',
         start_url: '/',
         icons: [
           {
-            src: 'icons/icon-192.svg',
+            src: 'icons/icon-192.png',
             sizes: '192x192',
-            type: 'image/svg+xml'
+            type: 'image/png'
           },
           {
-            src: 'icons/icon-512.svg',
+            src: 'icons/icon-512.png',
             sizes: '512x512',
-            type: 'image/svg+xml'
+            type: 'image/png'
           },
           {
-            src: 'icons/icon-512.svg',
+            src: 'fav-scrap.png',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'any maskable'
           }
         ]
