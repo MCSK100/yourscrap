@@ -131,16 +131,21 @@ export default function CustomerDashboard() {
 
     setSubmitting(true);
     try {
+      let profileId = null;
+      const { data: profile } = await supabase.from('profiles').select('id').eq('user_id', user.id).maybeSingle();
+      if (profile) profileId = profile.id;
+
       const categories = form.selectedCategories.includes('other')
         ? [...form.selectedCategories.filter((c) => c !== 'other'), `other:${form.otherCategory || 'misc'}`]
         : form.selectedCategories;
 
       const payload = {
         user_id: user.id,
+        profile_id: profileId,
         category: categories[0],
         categories: JSON.stringify(categories),
         item_name: form.item_name || categories.join(', '),
-        estimated_weight: Number(form.weight_kg) || null,
+        weight_kg: Number(form.weight_kg) || null,
         pickup_address: form.pickup_address,
         notes: form.notes || null,
         status: 'pending',
@@ -301,7 +306,7 @@ export default function CustomerDashboard() {
                           );
                         })}
                       </div>
-                      <p className="text-sm text-slate-400 truncate">{pickup.pickup_address}{pickup.estimated_weight ? ` • ${pickup.estimated_weight} kg` : ''}</p>
+                      <p className="text-sm text-slate-400 truncate">{pickup.pickup_address}{pickup.weight_kg ? ` • ${pickup.weight_kg} kg` : ''}</p>
                       <p className="text-xs text-slate-500 mt-0.5">{new Date(pickup.created_at).toLocaleDateString()}</p>
                     </div>
                     <div className="shrink-0 flex flex-col items-end gap-1">

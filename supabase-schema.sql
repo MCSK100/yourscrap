@@ -10,6 +10,7 @@ create table if not exists public.profiles (
   user_id uuid not null unique,
   full_name text,
   email text,
+  phone text,
   role text not null default 'user' check (role in ('user', 'admin')),
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())

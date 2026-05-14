@@ -10,6 +10,7 @@ alter table public.pickups add column if not exists cashback_used integer defaul
 
 -- Add coins balance to profiles
 alter table public.profiles add column if not exists coins integer default 0;
+alter table public.profiles add column if not exists phone text;
 
 -- Reward transactions ledger
 create table if not exists public.reward_transactions (

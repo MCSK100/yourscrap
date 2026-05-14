@@ -115,8 +115,8 @@ export default function BookingPage() {
   const handleWhatsAppRedirect = (pickup) => {
     const dateStr = pickup.pickup_date ? new Date(pickup.pickup_date).toLocaleDateString('en-IN') : '';
     const message = lang === 'en'
-      ? `Hi ${BRAND_NAME}! I just scheduled a pickup for ${selectedCategory?.label || 'Scrap'} (${pickup.estimated_weight}kg) on ${dateStr}. Please confirm.`
-      : `வணக்கம் ${BRAND_NAME}! ${selectedCategory?.ta || 'குப்பை'} ($ {pickup.estimated_weight}கிகி) ${dateStr}இல் pickupக்கு முன்பதிவு செய்துவிட்டேன். உறுதிப்படுத்துங்கள்.`;
+      ? `Hi ${BRAND_NAME}! I just scheduled a pickup for ${selectedCategory?.label || 'Scrap'} (${pickup.weight_kg}kg) on ${dateStr}. Please confirm.`
+      : `வணக்கம் ${BRAND_NAME}! ${selectedCategory?.ta || 'குப்பை'} (${pickup.weight_kg}கிகி) ${dateStr}இல் pickupக்கு முன்பதிவு செய்துவிட்டேன். உறுதிப்படுத்துங்கள்.`;
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');
   };
@@ -132,6 +132,7 @@ export default function BookingPage() {
         user_id: currentUser?.id || null,
         category: form.category,
         estimated_weight: Number(form.weight_kg) || null,
+        weight_kg: Number(form.weight_kg) || null,
         pickup_date: form.schedule_at ? new Date(form.schedule_at).toISOString().slice(0, 10) : null,
         status: 'pending',
         image_url: form.image_url || null,

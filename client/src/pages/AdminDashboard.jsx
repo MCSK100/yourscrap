@@ -254,7 +254,7 @@ export default function AdminDashboard() {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2 text-slate-400">
                       <Package size={14} />
-                      <span>{pickup.estimated_weight} kg</span>
+                      <span>{pickup.weight_kg} kg</span>
                     </div>
                     <div className="flex items-center gap-2 text-[#98FF98]">
                       <Calendar size={14} />
