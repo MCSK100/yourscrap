@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Truck, MapPin, Calendar, Package, CheckCircle, Clock, XCircle, RefreshCw } from 'lucide-react';
+import { Truck, MapPin, Calendar, Package, CheckCircle, Clock, RefreshCw, User, Phone } from 'lucide-react';
 import { supabase } from '../services/supabaseClient.js';
+import { getCurrentUser, logout } from '../services/auth.js';
 
 const BRAND_NAME = 'YourScrap';
 
@@ -12,12 +14,16 @@ const statusConfig = {
 };
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [pickups, setPickups] = useState([]);
+  const [profiles, setProfiles] = useState({});
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
+    const user = getCurrentUser();
+    if (!user || user.role !== 'admin') { navigate('/login'); return; }
     fetchPickups();
   }, []);
 
@@ -29,7 +35,23 @@ export default function AdminDashboard() {
       .order('pickup_date', { ascending: true })
       .order('created_at', { ascending: false });
     setPickups(data || []);
+
+    const userIds = [...new Set((data || []).map((p) => p.user_id).filter(Boolean))];
+    if (userIds.length > 0) {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, phone, email')
+        .in('user_id', userIds);
+      const profileMap = {};
+      (profileData || []).forEach((p) => { profileMap[p.user_id] = p; });
+      setProfiles(profileMap);
+    }
     setLoading(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   const updateStatus = async (id, newStatus) => {
@@ -62,15 +84,18 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div>
-            <h1 className="text-3xl font-bold text-white">
-              {BRAND_NAME} <span className="text-[#98FF98]">Admin</span>
-            </h1>
-            <p className="text-slate-400">
-              Manage weekend pickups and plan your route
-            </p>
+          <div className="flex items-center gap-4">
+            <img src="/scraplogo.png" alt="YourScrap" className="w-16 md:w-20" />
+            <div>
+              <h1 className="text-3xl font-bold text-white">
+                {BRAND_NAME} <span className="text-[#98FF98]">Admin</span>
+              </h1>
+              <p className="text-slate-400">
+                Manage weekend pickups and plan your route
+              </p>
+            </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
             <div className="px-4 py-2 rounded-2xl bg-[#98FF98]/10 border border-[#98FF98]/20 text-[#98FF98]">
               {pendingCount} pending
             </div>
@@ -79,6 +104,9 @@ export default function AdminDashboard() {
                 {todayPickups.length} today
               </div>
             )}
+            <button onClick={handleLogout} className="px-4 py-2 rounded-full bg-[#98FF98] text-black text-sm font-semibold hover:bg-[#7bdc78] transition-colors">
+              Logout
+            </button>
           </div>
         </motion.div>
 
@@ -236,7 +264,28 @@ export default function AdminDashboard() {
                         <span className="truncate text-xs">{pickup.user_id}</span>
                       </div>
                     )}
+                    {pickup.pickup_address && (
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <MapPin size={14} />
+                        <span className="truncate text-xs">{pickup.pickup_address}</span>
+                      </div>
+                    )}
                   </div>
+
+                  {profiles[pickup.user_id] && (
+                    <div className="mt-3 pt-3 border-t border-slate-800 space-y-1">
+                      <div className="flex items-center gap-2 text-slate-300 text-xs">
+                        <User size={12} />
+                        <span>{profiles[pickup.user_id].full_name || 'Unknown'}</span>
+                      </div>
+                      {profiles[pickup.user_id].phone && (
+                        <div className="flex items-center gap-2 text-slate-400 text-xs">
+                          <Phone size={12} />
+                          <span>{profiles[pickup.user_id].phone}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {pickup.image_url && (
                     <div className="mt-3 pt-3 border-t border-slate-800">

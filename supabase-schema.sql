@@ -67,47 +67,57 @@ alter table public.price_list enable row level security;
 alter table public.pickups enable row level security;
 
 -- Profiles policies
-create policy if not exists "Profiles can select own record" on public.profiles
+drop policy if exists "Profiles can select own record" on public.profiles;
+create policy "Profiles can select own record" on public.profiles
   for select
   using (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
 
-create policy if not exists "Profiles can insert own record" on public.profiles
+drop policy if exists "Profiles can insert own record" on public.profiles;
+create policy "Profiles can insert own record" on public.profiles
   for insert
   with check (auth.uid() = user_id);
 
-create policy if not exists "Profiles can update own record" on public.profiles
+drop policy if exists "Profiles can update own record" on public.profiles;
+create policy "Profiles can update own record" on public.profiles
   for update
   using (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'))
   with check (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
 
-create policy if not exists "Profiles admin full access" on public.profiles
+drop policy if exists "Profiles admin full access" on public.profiles;
+create policy "Profiles admin full access" on public.profiles
   for delete
   using (exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
 
 -- Price list policies
-create policy if not exists "Price list authenticated select" on public.price_list
+drop policy if exists "Price list authenticated select" on public.price_list;
+create policy "Price list authenticated select" on public.price_list
   for select
   using (auth.role() = 'authenticated');
 
-create policy if not exists "Price list admin modify" on public.price_list
+drop policy if exists "Price list admin modify" on public.price_list;
+create policy "Price list admin modify" on public.price_list
   for all
   using (exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'))
   with check (exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
 
 -- Pickups policies
-create policy if not exists "Pickups can select own records" on public.pickups
+drop policy if exists "Pickups can select own records" on public.pickups;
+create policy "Pickups can select own records" on public.pickups
   for select
   using (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
 
-create policy if not exists "Pickups can insert own records" on public.pickups
+drop policy if exists "Pickups can insert own records" on public.pickups;
+create policy "Pickups can insert own records" on public.pickups
   for insert
   with check (auth.uid() = user_id);
 
-create policy if not exists "Pickups can update own records" on public.pickups
+drop policy if exists "Pickups can update own records" on public.pickups;
+create policy "Pickups can update own records" on public.pickups
   for update
   using (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'))
   with check (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
 
-create policy if not exists "Pickups admin delete" on public.pickups
+drop policy if exists "Pickups admin delete" on public.pickups;
+create policy "Pickups admin delete" on public.pickups
   for delete
   using (exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));

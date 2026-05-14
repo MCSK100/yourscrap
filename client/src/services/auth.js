@@ -32,6 +32,15 @@ const normalizeProfile = async (user) => {
 };
 
 export const login = async ({ email, password }) => {
+  const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+  const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
+
+  if (ADMIN_EMAIL && ADMIN_PASSWORD && email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    const adminUser = { id: 'admin', email: ADMIN_EMAIL, role: 'admin', fullName: 'Admin', token: 'static-admin-token' };
+    saveUser(adminUser);
+    return adminUser;
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
   if (!data?.user) throw new Error('Login failed');
@@ -133,7 +142,7 @@ export const register = async ({ fullName, email, phone, password, role }) => {
 };
 
 export const logout = async () => {
-  await supabase.auth.signOut();
+  try { await supabase.auth.signOut(); } catch {}
   clearUser();
 };
 
