@@ -1,0 +1,1 @@
+import{j as r}from"./index-B9V6jsTU.js";function s({message:t,type:e="success"}){return t?r.jsx("div",{className:`fixed bottom-6 right-6 z-50 rounded-2xl px-5 py-3 text-sm font-semibold shadow-soft transition ${e==="error"?"bg-rose-600 text-white":"bg-emerald-600 text-white"}`,children:t}):null}export{s as T};

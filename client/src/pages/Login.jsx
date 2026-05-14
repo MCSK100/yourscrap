@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { login, loginWithGoogle, applySessionUserToStorage } from '../services/auth.js';
+import { login } from '../services/auth.js';
 
 import Toast from '../components/Toast.jsx';
 
@@ -83,27 +83,6 @@ export default function Login() {
               className="w-full rounded-2xl bg-gradient-to-r from-[#98FF98] to-[#B2AC88] px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? 'Logging in...' : 'Login'}
-            </button>
-
-            <button
-              type="button"
-              disabled={loading}
-              onClick={async () => {
-                setLoading(true);
-                setToast({ message: '', type: 'success' });
-                try {
-                  await loginWithGoogle();
-                  // OAuth redirects; if it doesn't, we still attempt to persist session.
-                  await applySessionUserToStorage();
-                } catch (error) {
-                  setToast({ message: error.message || 'Google login failed', type: 'error' });
-                } finally {
-                  setLoading(false);
-                }
-              }}
-              className="w-full rounded-2xl border border-slate-700 bg-slate-900/40 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Continue with Google
             </button>
 
           </form>

@@ -24,7 +24,7 @@ export default function Register() {
     setLoading(true);
     setToast({ message: '', type: 'success' });
     try {
-      const user = await register({ fullName, email, phone, password, role: 'customer' });
+      const user = await register({ fullName, email, phone, password, role: 'user' });
       setToast({ message: 'Registered successfully!', type: 'success' });
       navigate(user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (error) {
