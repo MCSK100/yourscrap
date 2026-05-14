@@ -40,7 +40,7 @@ export default function AdminDashboard() {
     if (userIds.length > 0) {
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('user_id, full_name, phone, email')
+        .select('user_id, full_name, phone, email, coins')
         .in('user_id', userIds);
       const profileMap = {};
       (profileData || []).forEach((p) => { profileMap[p.user_id] = p; });
@@ -54,8 +54,18 @@ export default function AdminDashboard() {
     navigate('/login');
   };
 
-  const updateStatus = async (id, newStatus) => {
+  const updateStatus = async (id, newStatus, userId) => {
     await supabase.from('pickups').update({ status: newStatus }).eq('id', id);
+    if (newStatus === 'completed' && userId && userId !== 'admin') {
+      const COINS = 10;
+      const { data: profile } = await supabase.from('profiles').select('coins').eq('user_id', userId).single();
+      const currentCoins = profile?.coins || 0;
+      await supabase.from('profiles').update({ coins: currentCoins + COINS }).eq('user_id', userId);
+      await supabase.from('pickups').update({ coins_earned: COINS }).eq('id', id);
+      await supabase.from('reward_transactions').insert({
+        user_id: userId, amount: COINS, type: 'earned', description: 'Pickup completed', pickup_id: id,
+      });
+    }
     fetchPickups();
   };
 
@@ -228,7 +238,7 @@ export default function AdminDashboard() {
                     </div>
                     <select
                       value={pickup.status}
-                      onChange={(e) => updateStatus(pickup.id, e.target.value)}
+                      onChange={(e) => updateStatus(pickup.id, e.target.value, pickup.user_id)}
                       className="text-xs rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-white"
                     >
                       <option value="pending">Pending</option>
@@ -284,6 +294,9 @@ export default function AdminDashboard() {
                           <span>{profiles[pickup.user_id].phone}</span>
                         </div>
                       )}
+                      {profiles[pickup.user_id].coins > 0 && (
+                        <div className="text-yellow-500 text-xs">🪙 {profiles[pickup.user_id].coins} coins</div>
+                      )}
                     </div>
                   )}
 
@@ -297,9 +310,13 @@ export default function AdminDashboard() {
                     </div>
                   )}
 
+                  {pickup.coins_earned > 0 && (
+                    <div className="mt-2 text-xs text-yellow-400">+{pickup.coins_earned} coins earned</div>
+                  )}
+
                   <div className="mt-3 pt-3 border-t border-slate-800 flex gap-2">
                     <button
-                      onClick={() => updateStatus(pickup.id, 'completed')}
+                      onClick={() => updateStatus(pickup.id, 'completed', pickup.user_id)}
                       className="flex-1 py-2 rounded-lg bg-green-500/10 text-green-400 text-xs font-medium hover:bg-green-500/20 transition-colors"
                     >
                       Complete
@@ -310,7 +327,8 @@ export default function AdminDashboard() {
                           pickup.id,
                           pickup.status === 'pending'
                             ? 'in_progress'
-                            : 'pending'
+                            : 'pending',
+                          pickup.user_id
                         )
                       }
                       className="flex-1 py-2 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors"
