@@ -4,6 +4,10 @@
 -- Add categories JSON array to pickups (for multi-select)
 alter table public.pickups add column if not exists categories text;
 
+-- Add pickup date and preferred time
+alter table public.pickups add column if not exists pickup_date text;
+alter table public.pickups add column if not exists preferred_time text;
+
 -- Add coins tracking to pickups
 alter table public.pickups add column if not exists coins_earned integer default 0;
 alter table public.pickups add column if not exists cashback_used integer default 0;

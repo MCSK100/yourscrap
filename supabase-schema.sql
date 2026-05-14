@@ -47,6 +47,8 @@ create table if not exists public.pickups (
   estimated_value_cents integer not null check (estimated_value_cents >= 0),
   final_value_cents integer default 0 check (final_value_cents >= 0),
   status text not null default 'pending' check (status in ('pending', 'confirmed', 'collected', 'cancelled', 'completed')),
+  pickup_date text,
+  preferred_time text,
   schedule_at timestamptz not null,
   pickup_address text not null,
   image_url text,

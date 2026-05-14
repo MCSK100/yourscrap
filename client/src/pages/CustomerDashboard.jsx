@@ -30,6 +30,8 @@ const initialForm = {
   item_name: '',
   weight_kg: '',
   pickup_address: '',
+  pickup_date: new Date().toISOString().slice(0, 10),
+  preferred_time: '',
   notes: '',
 };
 
@@ -128,6 +130,8 @@ export default function CustomerDashboard() {
     if (!form.fullName.trim()) { setError('Please enter your name.'); return; }
     if (form.selectedCategories.length === 0) { setError('Please select at least one category.'); return; }
     if (!form.pickup_address.trim()) { setError('Please enter your pickup address.'); return; }
+    if (!form.pickup_date) { setError('Please select a pickup date.'); return; }
+    if (!form.preferred_time) { setError('Please select a preferred time slot.'); return; }
 
     setSubmitting(true);
     try {
@@ -147,10 +151,11 @@ export default function CustomerDashboard() {
         item_name: form.item_name || categories.join(', '),
         weight_kg: Number(form.weight_kg) || null,
         pickup_address: form.pickup_address,
+        pickup_date: form.pickup_date,
+        preferred_time: form.preferred_time || null,
         notes: form.notes || null,
         status: 'pending',
         coins_earned: 0,
-        pickup_date: new Date().toISOString().slice(0, 10),
         created_at: new Date().toISOString(),
       };
 
@@ -264,6 +269,24 @@ export default function CustomerDashboard() {
               </div>
             </div>
 
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Pickup Date</label>
+                <input type="date" value={form.pickup_date} onChange={(e) => handleChange('pickup_date', e.target.value)} min={new Date().toISOString().slice(0, 10)} className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none [color-scheme:dark]" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Preferred Time</label>
+                <select value={form.preferred_time} onChange={(e) => handleChange('preferred_time', e.target.value)} className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none">
+                  <option value="">Select a time slot</option>
+                  <option value="09:00-11:00">9:00 AM - 11:00 AM</option>
+                  <option value="11:00-13:00">11:00 AM - 1:00 PM</option>
+                  <option value="13:00-15:00">1:00 PM - 3:00 PM</option>
+                  <option value="15:00-17:00">3:00 PM - 5:00 PM</option>
+                  <option value="17:00-19:00">5:00 PM - 7:00 PM</option>
+                </select>
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Notes (optional)</label>
               <textarea value={form.notes} onChange={(e) => handleChange('notes', e.target.value)} rows={2} placeholder="Any special instructions" className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none placeholder:text-slate-500 resize-none" />
@@ -307,7 +330,7 @@ export default function CustomerDashboard() {
                         })}
                       </div>
                       <p className="text-sm text-slate-400 truncate">{pickup.pickup_address}{pickup.weight_kg ? ` • ${pickup.weight_kg} kg` : ''}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">{new Date(pickup.created_at).toLocaleDateString()}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{pickup.pickup_date}{pickup.preferred_time ? ` • ${pickup.preferred_time}` : ''}</p>
                     </div>
                     <div className="shrink-0 flex flex-col items-end gap-1">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
