@@ -15,20 +15,28 @@ const stats = [
   { value: '98%', label: 'Customer Satisfaction' },
 ];
 
+const heroBgImages = [
+  'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1920&q=85&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Ym9va3N8ZW58MHwwfDB8fHww',
+  'https://images.unsplash.com/photo-1588803103006-2822e4b2619d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1567093322503-341d262ad8f9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8aXJvbnxlbnwwfDB8MHx8fDA%3D',
+  'https://media.istockphoto.com/id/638044390/photo/news.webp?a=1&b=1&s=612x612&w=0&k=20&c=Sy5beSNrN9PXtP-LdKvl6DD7CMgA3DAJ-A3bpQI3cBU=',
+];
+
 const scrapCategories = [
-  { icon: '🔩', title: 'Iron & Steel', description: 'Old pipes, utensils, construction waste', color: 'from-orange-500 to-red-500' },
-  { icon: '🔌', title: 'Copper', description: 'Wires, pipes, electrical components', color: 'from-amber-600 to-yellow-500' },
-  { icon: '⚙️', title: 'Aluminum', description: 'Cans, foil, kitchenware', color: 'from-blue-400 to-cyan-400' },
-  { icon: '🎺', title: 'Brass', description: 'Fittings, decorative items, old jewelry', color: 'from-yellow-500 to-orange-500' },
-  { icon: '🧴', title: 'Plastic', description: 'PET bottles, containers, wrappers', color: 'from-green-400 to-emerald-500' },
-  { icon: '📰', title: 'Paper', description: 'Newspapers, cardboard, books', color: 'from-stone-400 to-neutral-400' },
+  { icon: '🔩', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5_CKCUL9ap-FDAXL5dFWu6Sde64mmabVeRQ&s', title: 'Iron & Steel', description: 'Old pipes, utensils, construction waste', color: 'from-orange-500 to-red-500' },
+  { icon: '🔌', image: 'https://plus.unsplash.com/premium_photo-1682145728214-dbd62535af3f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d2lyZXN8ZW58MHwwfDB8fHww', title: 'Copper', description: 'Wires, pipes, electrical components', color: 'from-amber-600 to-yellow-500' },
+  { icon: '⚙️', image: 'https://plus.unsplash.com/premium_photo-1673208484535-66a8f7d05294?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QWx1bWludW18ZW58MHwwfDB8fHww', title: 'Aluminum', description: 'Cans, foil, kitchenware', color: 'from-blue-400 to-cyan-400' },
+  { icon: '🎺', image: 'https://images.unsplash.com/photo-1652960018678-1f19799996c5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fEJyYXNzfGVufDB8MHwwfHx8MA%3D%3D', title: 'Brass', description: 'Fittings, decorative items, old jewelry', color: 'from-yellow-500 to-orange-500' },
+  { icon: '🧴', image: 'https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fFBsYXN0aWN8ZW58MHwwfDB8fHww', title: 'Plastic', description: 'PET bottles, containers, wrappers', color: 'from-green-400 to-emerald-500' },
+  { icon: '📰', image: 'https://plus.unsplash.com/premium_photo-1725075086636-b996a2d07782?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fFBhcGVyfGVufDB8MHwwfHx8MA%3D%3D', title: 'Paper', description: 'Newspapers, cardboard, books', color: 'from-stone-400 to-neutral-400' },
 ];
 
 const features = [
-  { icon: '⚡', title: 'Instant Booking', description: 'Book your pickup in under 60 seconds. No calls, no waiting.', ta: 'உடனடி முன்பதிவு' },
-  { icon: '💰', title: 'Fair Prices', description: 'Get real-time market rates for your scrap. No hidden fees.', ta: 'சரியான விலை' },
-  { icon: '🌱', title: 'Eco Impact', description: 'Every pickup saves 2.5kg CO₂. Track your contribution.', ta: 'சூழல் பாதுகாப்பு' },
-  { icon: '🚛', title: 'Free Pickup', description: 'We come to your doorstep. Free for orders above 10kg.', ta: ' இலவசம் pickup' },
+  { image: 'https://plus.unsplash.com/premium_photo-1661753249955-398718029b07?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTY5fHxib29raW5nfGVufDB8MHwwfHx8MA%3D%3D&auto=format&fit=crop', title: 'Instant Booking', description: 'Book your pickup in under 60 seconds. No calls, no waiting.', ta: 'உடனடி முன்பதிவு' },
+  { image: 'https://plus.unsplash.com/premium_photo-1661657836480-66db13eea81f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJpY2V8ZW58MHwwfDB8fHww&auto=format&fit=crop', title: 'Fair Prices', description: 'Get real-time market rates for your scrap. No hidden fees.', ta: 'சரியான விலை' },
+  { image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&q=85&auto=format&fit=crop', title: 'Eco Impact', description: 'Every pickup saves 2.5kg CO₂. Track your contribution.', ta: 'சூழல் பாதுகாப்பு' },
+  { image: 'https://plus.unsplash.com/premium_photo-1661394811182-ebc2f0ab47b9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGZyZWUlMjBwaWNrdXB8ZW58MHwwfDB8fHww&auto=format&fit=crop', title: 'Free Pickup', description: 'We come to your doorstep. Free for orders above 10kg.', ta: ' இலவசம் pickup' },
 ];
 
 const steps = [
@@ -47,7 +55,7 @@ const priceRates = [
 ];
 
 const LeafIcon = () => (
-  <img src="/scraplogo.png" alt="YourScrap" className="w-14 md:w-16" />
+  <img src="/scraplogo.png" alt="YourScrap" className="w-[17rem]" />
 );
 
 const whatsAppIcon = (
@@ -131,16 +139,31 @@ function Navbar({ lang, setLang }) {
 }
 
 function Hero({ lang, setLang }) {
+  const [currentBg, setCurrentBg] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBg((prev) => (prev + 1) % heroBgImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0d1a0d] via-[#1a2e1a] to-[#0a150a]" />
+      <div className="absolute inset-0">
+        {heroBgImages.map((img, i) => (
+          <div
+            key={i}
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+            style={{
+              backgroundImage: `url(${img})`,
+              opacity: i === currentBg ? 1 : 0,
+            }}
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
+      </div>
 
-      <AuroraBackground className="opacity-95" intensity={1} enableMouseFollow={true} />
-
-      <FloatingOrb className="w-64 md:w-96 h-64 md:h-96 bg-[#98FF98]/10 -top-10 md:-top-20 -left-20" delay={0} />
-      <FloatingOrb className="w-56 md:w-80 h-56 md:h-80 bg-[#B2AC88]/10 top-1/3 right-10" delay={2} />
-      <FloatingOrb className="w-48 md:w-72 h-48 md:h-72 bg-[#98FF98]/10 bottom-20 left-1/4" delay={4} />
-      
       <div className="relative z-10 w-full max-w-7xl mx-auto py-20 md:py-32 text-center">
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#98FF98]/10 backdrop-blur-md border border-[#98FF98]/20 mb-6 md:mb-8">
@@ -159,13 +182,13 @@ function Hero({ lang, setLang }) {
           {lang === 'en' ? "Schedule your pickup for Saturday or Sunday." : "சனி அல்லது ஞாயிறு அன்று pickupக்கு முன்பதிவு செய்யுங்கள்."}
         </motion.p>
 
-<motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="flex flex-col sm:flex-row gap-3 justify-center mb-8 md:mb-16">
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="flex flex-col sm:flex-row gap-3 justify-center mb-8 md:mb-16">
           <Link to="/book" className="group relative inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-semibold rounded-full bg-[#98FF98] text-black overflow-hidden">
-            <span className="relative z-10 flex items-center gap-2">{lang === 'en' ? 'Book Pickup 🚛' : 'முன்பதிவு 🚛'}</span>
+            <span className="relative z-10 flex items-center gap-2">{lang === 'en' ? 'Book Free Pickup' : 'முன்பதிவு'}</span>
             <motion.div className="absolute inset-0 bg-[#B2AC88]" initial={{ x: '-100%' }} whileHover={{ x: 0 }} transition={{ type: 'tween', duration: 0.3 }} />
           </Link>
           <Link to="/register" className="inline-flex items-center justify-center gap-2 px-6 md:py-4 text-sm md:text-base font-semibold rounded-full border border-[#98FF98]/30 bg-[#98FF98]/5 backdrop-blur-md text-[#98FF98] hover:bg-[#98FF98]/10 transition-all">
-            {lang === 'en' ? 'Get Started ↗' : 'துவக்கு ↗'}
+            {lang === 'en' ? 'Get Started' : 'துவக்கு'}
           </Link>
         </motion.div>
 
@@ -177,14 +200,24 @@ function Hero({ lang, setLang }) {
             </motion.div>
           ))}
         </motion.div>
+
+        <div className="flex justify-center gap-2 mt-8">
+          {heroBgImages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentBg(i)}
+              className={`w-2 h-2 rounded-full transition-all ${i === currentBg ? 'bg-[#98FF98] w-6' : 'bg-white/30'}`}
+            />
+          ))}
+        </div>
       </div>
 
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
-          <div className="w-6 h-10 rounded-full border-2 border-white/30 flex justify-center pt-2">
-            <motion.div className="w-1.5 h-1.5 rounded-full bg-white/60" animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} />
-          </div>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
+        <div className="w-6 h-10 rounded-full border-2 border-white/30 flex justify-center pt-2">
+          <motion.div className="w-1.5 h-1.5 rounded-full bg-white/60" animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} />
         </div>
-      </section>
+      </div>
+    </section>
   );
 }
 
@@ -221,10 +254,15 @@ function ScrapCarousel({ lang }) {
             >
               {scrapCategories.map((category, index) => (
                 <div key={index} className="w-full flex-shrink-0">
-                  <div className={`p-8 md:p-16 rounded-3xl bg-gradient-to-br ${category.color} relative overflow-hidden`}>
-                    <div className="absolute inset-0 bg-black/20" />
-                    <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                      <div className="text-6xl md:text-8xl mb-4">{category.icon}</div>
+                  <div className="relative h-[350px] md:h-[480px] rounded-3xl overflow-hidden">
+                    <img
+                      src={category.image}
+                      alt={category.title}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50" />
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-8 md:p-16">
                       <h3 className="text-2xl md:text-4xl font-bold text-white mb-2">{category.title}</h3>
                       <p className="text-white/80 text-sm md:text-lg max-w-md">{category.description}</p>
                       <Link 
@@ -274,50 +312,55 @@ function ScrapCarousel({ lang }) {
 
 function EnvironmentalImpact({ lang }) {
   const impacts = [
-    { value: '75%', label: 'Energy Saved', desc: 'Recycling steel saves 75% energy vs new production', icon: '⚡' },
-    { value: '95%', label: 'Aluminum Saved', desc: 'Recycling aluminum saves 95% energy', icon: '🔄' },
-    { value: '86%', label: 'Less Pollution', desc: 'Air pollution reduced by 86%', icon: '🌿' },
-    { value: '40%', label: 'Water Saved', desc: 'Water usage reduced by 40%', icon: '💧' },
+    { value: '75%', label: 'Energy Saved', desc: 'Recycling steel saves 75% energy vs new production', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=85&auto=format&fit=crop' },
+    { value: '95%', label: 'Aluminum Saved', desc: 'Recycling aluminum saves 95% energy', image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=85&auto=format&fit=crop' },
+    { value: '86%', label: 'Less Pollution', desc: 'Air pollution reduced by 86%', image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&q=85&auto=format&fit=crop' },
+    { value: '40%', label: 'Water Saved', desc: 'Water usage reduced by 40%', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=85&auto=format&fit=crop' },
   ];
 
-  return (
-    <section className="relative py-12 md:py-20 bg-[#051005]">
-      <FloatingOrb className="w-48 md:w-72 h-48 md:h-72 bg-[#98FF98]/10 top-1/4 -left-20 md:-left-36" delay={2} />
-      <FloatingOrb className="w-40 md:w-56 h-40 md:h-56 bg-[#B2AC88]/10 bottom-1/4 -right-20 md:-right-36" delay={4} />
+  // return (
+  //   <section className="relative py-12 md:py-20 bg-[#051005]">
+  //     <FloatingOrb className="w-48 md:w-72 h-48 md:h-72 bg-[#98FF98]/10 top-1/4 -left-20 md:-left-36" delay={2} />
+  //     <FloatingOrb className="w-40 md:w-56 h-40 md:h-56 bg-[#B2AC88]/10 bottom-1/4 -right-20 md:-right-36" delay={4} />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 md:mb-16">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
-            {lang === 'en' ? 'Why Recycle?' : 'ஏன் மறுசுழற்ற வேண்டும்?'}
-          </h2>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
-            {lang === 'en'
-              ? 'Every ton of recycled scrap helps conserve natural resources and reduces environmental impact.'
-              : 'ஒரு டன் மறுசுழற்றப்பட்ட குப்பை சுற்றுச்சூழல் தாக்கத்தைக் குறைக்க உதவுகிறது.'
-            }
-          </p>
-        </motion.div>
+  //     <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6">
+  //       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 md:mb-16">
+  //         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
+  //           {lang === 'en' ? 'Why Recycle?' : 'ஏன் மறுசுழற்ற வேண்டும்?'}
+  //         </h2>
+  //         <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+  //           {lang === 'en'
+  //             ? 'Every ton of recycled scrap helps conserve natural resources and reduces environmental impact.'
+  //             : 'ஒரு டன் மறுசுழற்றப்பட்ட குப்பை சுற்றுச்சூழல் தாக்கத்தைக் குறைக்க உதவுகிறது.'
+  //           }
+  //         </p>
+  //       </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {impacts.map((impact, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="p-4 md:p-6 rounded-2xl bg-[#0a150a] border border-[#98FF98]/20 hover:border-[#98FF98]/40 transition-all text-center"
-            >
-              <div className="text-3xl md:text-4xl mb-2">{impact.icon}</div>
-              <div className="text-2xl md:text-3xl font-bold text-[#98FF98] mb-1">{impact.value}</div>
-              <div className="text-sm md:text-base font-semibold text-white mb-1">{impact.label}</div>
-              <div className="text-xs md:text-sm text-slate-400">{impact.desc}</div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+  //       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+  //         {impacts.map((impact, i) => (
+  //           <motion.div 
+  //             key={i}
+  //             initial={{ opacity: 0, scale: 0.9 }}
+  //             whileInView={{ opacity: 1, scale: 1 }}
+  //             viewport={{ once: true }}
+  //             transition={{ delay: i * 0.1 }}
+  //             className="p-4 md:p-6 rounded-2xl bg-[#0a150a] border border-[#98FF98]/20 hover:border-[#98FF98]/40 transition-all text-center"
+  //           >
+  //             <img
+  //               src={impact.image}
+  //               alt={impact.label}
+  //               loading="lazy"
+  //               className="w-12 h-12 md:w-16 md:h-16 object-cover rounded-full mx-auto mb-2"
+  //             />
+  //             <div className="text-2xl md:text-3xl font-bold text-[#98FF98] mb-1">{impact.value}</div>
+  //             <div className="text-sm md:text-base font-semibold text-white mb-1">{impact.label}</div>
+  //             <div className="text-xs md:text-sm text-slate-400">{impact.desc}</div>
+  //           </motion.div>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   </section>
+  // );
 }
 
 function Features({ lang }) {
@@ -335,7 +378,12 @@ function Features({ lang }) {
             <motion.div key={feature.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} whileHover={{ y: -4 }}
               className="p-4 md:p-8 rounded-2xl md:rounded-3xl bg-[#0a150a] border border-[#98FF98]/10 hover:border-[#98FF98]/30 transition-all"
             >
-              <div className="text-2xl md:text-4xl mb-2 md:mb-4">{feature.icon}</div>
+              <img
+                src={feature.image}
+                alt={feature.title}
+                loading="lazy"
+                className="w-12 h-12 md:w-16 md:h-16 object-cover rounded-xl mb-2 md:mb-4"
+              />
               <h3 className="text-sm md:text-xl font-semibold text-white mb-1 md:mb-2">{feature.title}</h3>
               <p className="text-xs md:text-sm text-slate-400 mb-1">{feature.description}</p>
               <p className="text-[#B2AC88] text-xs">{feature.ta}</p>
@@ -354,7 +402,7 @@ function Services({ lang }) {
       titleTa: 'உலோக குப்பை',
       description: 'Iron, steel, copper, aluminum, brass — we recycle all metals at competitive rates.',
       descriptionTa: 'இரும்பு, எஃகு, செம்பு, அலுமினியம், பித்தளை — அனைத்து உலோகங்களையும் சிறந்த விலையில் மறுசுழற்றுகிறோம்.',
-      image: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?w=900&q=85&auto=format&fit=crop',
+      image: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=900&q=85&auto=format&fit=crop',
       alt: 'Scrap metal collection service — clean recycled metal parts',
     },
     {
@@ -362,7 +410,7 @@ function Services({ lang }) {
       titleTa: 'காகிதம் & அட்டை',
       description: 'Newspapers, cardboard boxes, office paper, books — we take it all for recycling.',
       descriptionTa: 'செய்தித்தாள்கள், அட்டை பெட்டிகள், அலுவலக காகிதம், புத்தகங்கள் — அனைத்தையும் மறுசுழற்சிக்கு எடுத்துக்கொள்கிறோம்.',
-      image: 'https://images.unsplash.com/photo-1605600659873-2d8f5d65f29c?w=900&q=85&auto=format&fit=crop',
+      image: 'https://images.pexels.com/photos/4498114/pexels-photo-4498114.jpeg?auto=compress&cs=tinysrgb&w=900',
       alt: 'Paper and cardboard recycling service — stacked organized cardboard',
     },
     {
@@ -375,67 +423,7 @@ function Services({ lang }) {
     },
   ];
 
-  return (
-    <section className="relative py-12 md:py-20 lg:py-32 bg-black">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8 md:mb-16"
-        >
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
-            {lang === 'en' ? 'Our' : 'எங்கள்'}{' '}
-            <span className="bg-gradient-to-r from-[#98FF98] to-[#B2AC88] bg-clip-text text-transparent">
-              {lang === 'en' ? 'Services' : 'சேவைகள்'}
-            </span>
-          </h2>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
-            {lang === 'en'
-              ? 'Professional scrap collection and recycling services tailored to your needs.'
-              : 'உங்கள் தேவைகளுக்கு ஏற்ற தொழில்முறை குப்பை சேகரிப்பு மற்றும் மறுசுழற்சி சேவைகள்.'
-            }
-          </p>
-        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          {services.map((service, i) => (
-            <motion.div
-              key={service.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-              whileHover={{ y: -4 }}
-              className="group relative rounded-3xl border border-[#B2AC88] overflow-hidden h-[380px] md:h-[520px]"
-            >
-              <img
-                src={service.image}
-                alt={service.alt}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 backdrop-blur-md bg-white/5 border-t border-white/10 rounded-b-3xl">
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-                  {lang === 'en' ? service.title : service.titleTa}
-                </h3>
-                <p className="text-sm md:text-base text-slate-300 mb-4">
-                  {lang === 'en' ? service.description : service.descriptionTa}
-                </p>
-                <Link
-                  to="/book"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#98FF98] text-black text-sm font-semibold hover:bg-[#7bdc78] transition-colors"
-                >
-                  {lang === 'en' ? 'Get Quote →' : 'விலை பெற →'}
-                </Link>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
 }
 
 function HowItWorks({ lang }) {
@@ -553,7 +541,7 @@ function CTA({ lang }) {
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-10 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black mb-4 md:mb-6">
-            {lang === 'en' ? 'Ready to Start Earning? 🎉' : 'பணம் சம்பாதிக்கத் தயாரா? 🎉'}
+            {lang === 'en' ? 'Ready to Start Earning?' : 'பணம் சம்பாதிக்கத் தயாரா?'}
           </h2>
           <p className="text-sm md:text-xl text-black/70 mb-6 md:mb-10 max-w-md mx-auto">
             {lang === 'en' ? 'Join 10,000+ users. First pickup FREE above 10kg!' : '10,000+ பயனர்கள். முதல் pickup இலவசம்!'}
@@ -565,14 +553,14 @@ function CTA({ lang }) {
               className="group relative inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-bold rounded-full bg-gradient-to-r from-[#98FF98] to-[#B2AC88] text-black shadow-[0_0_30px_rgba(152,255,152,0.45)] hover:shadow-[0_0_45px_rgba(152,255,152,0.6)] transition-all"
             >
               <span className="relative z-10 flex items-center gap-2">
-                {lang === 'en' ? 'Book Pickup Now 🚛' : 'முன்பதிவு 🚛'}
+                {lang === 'en' ? 'Book Pickup Now' : 'முன்பதிவு'}
               </span>
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-white/0 via-white/35 to-white/0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 rounded-full" />
             </Link>
 
             <Link
               to="/register"
-              className="inline-flex items-center justify-center gap-2 px-6 md:py-4 py-3 md:px-8 text-sm md:text-base font-bold rounded-full border border-white/40 bg-white/10 text-black hover:bg-white/20 transition-all shadow-[0_0_18px_rgba(152,255,152,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/50"
+              className="inline-flex items-center justify-center gap-2 px-6 md:py-4 py-3 md:px-8 text-sm md:text-base font-bold rounded-full border border-white/40 bg-white/10 text-black hover:bg-white/20 transition-all shadow-[0_0_18px_rgba(152,255,152,0.22)]"
             >
               {lang === 'en' ? 'Create Account' : 'கணக்கு உருவாக்கு'}
             </Link>
@@ -611,7 +599,7 @@ export default function Landing() {
       <Cursor />
       <Navbar lang={lang} setLang={setLang} />
       
-      <Link to="https://wa.me/8610499863" target="_blank" rel="noreferrer"
+      <Link to="https://wa.me/9080405581" target="_blank" rel="noreferrer"
         className="fixed bottom-6 right-6 z-50 rounded-full bg-[#98FF98] p-4 shadow-lg hover:bg-[#7bdc78] flex items-center justify-center animate-pulse"
         aria-label="Chat on WhatsApp"
       >

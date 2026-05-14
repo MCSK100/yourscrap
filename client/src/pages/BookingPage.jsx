@@ -7,7 +7,7 @@ import { supabase } from '../services/supabaseClient.js';
 import { getCurrentUser } from '../services/auth.js';
 
 const BRAND_NAME = 'YourScrap';
-const WHATSAPP_NUMBER = '8610499863'; // Replace with your WhatsApp number
+const WHATSAPP_NUMBER = '9080405581'; // Replace with your WhatsApp number
 
 const categoryOptions = [
   { value: 'electronics', label: 'Electronics', ta: 'மின்னணுக்கு' },

@@ -7,7 +7,7 @@ import { getCurrentUser, logout } from '../services/auth.js';
 const BRAND_NAME = 'YourScrap';
 
 const LeafIcon = () => (
-  <img src="/scraplogo.png" alt="YourScrap" className="w-14 md:w-16" />
+  <img src="/scraplogo.png" alt="YourScrap" className="w-[17rem]" />
 );
 
 export default function CustomerDashboard() {
