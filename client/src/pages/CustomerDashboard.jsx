@@ -136,8 +136,24 @@ export default function CustomerDashboard() {
     setSubmitting(true);
     try {
       let profileId = null;
-      const { data: profile } = await supabase.from('profiles').select('id').eq('user_id', user.id).maybeSingle();
-      if (profile) profileId = profile.id;
+      const { data: profile, error: profileErr } = await supabase.from('profiles').select('id').eq('user_id', user.id).maybeSingle();
+      if (profile) {
+        profileId = profile.id;
+      } else {
+        const { data: newProfile } = await supabase.from('profiles').insert({
+          user_id: user.id,
+          full_name: form.fullName || user.fullName || '',
+          email: user.email || null,
+          role: 'user'
+        }).select('id').single();
+        if (newProfile) profileId = newProfile.id;
+      }
+
+      if (!profileId) {
+        setError('Unable to verify your profile. Try logging out and back in.');
+        setSubmitting(false);
+        return;
+      }
 
       const categories = form.selectedCategories.includes('other')
         ? [...form.selectedCategories.filter((c) => c !== 'other'), `other:${form.otherCategory || 'misc'}`]

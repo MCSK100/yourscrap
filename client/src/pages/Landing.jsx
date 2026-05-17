@@ -120,7 +120,7 @@ function FloatingOrb({ className, delay = 0 }) {
 
 function Navbar({ lang, setLang }) {
   return (
-    <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} className="fixed top-0 left-0 right-0 z-50 px-4 py-3 bg-transparent">
+    <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} className="fixed top-0 left-0 right-0 z-50 px-4 py-3 bg-black/30 backdrop-blur-md">
       <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
         <Link to="/" className="flex items-center gap-2">
           <LeafIcon />
@@ -373,7 +373,7 @@ function Features({ lang }) {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           {features.map((feature, i) => (
             <motion.div key={feature.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} whileHover={{ y: -4 }}
               className="p-4 md:p-8 rounded-2xl md:rounded-3xl bg-[#0a150a] border border-[#98FF98]/10 hover:border-[#98FF98]/30 transition-all"

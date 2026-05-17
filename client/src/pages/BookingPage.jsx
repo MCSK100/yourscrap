@@ -128,8 +128,27 @@ export default function BookingPage() {
 
     try {
       const currentUser = getCurrentUser();
+      if (!currentUser?.id) {
+        setError(lang === 'en' ? 'Please log in to book a pickup.' : 'தயவுசெய்து உள்நுழையவும்.');
+        setSubmitting(false);
+        return;
+      }
+
+      let profileId = null;
+      const { data: profile } = await supabase.from('profiles').select('id').eq('user_id', currentUser.id).maybeSingle();
+      if (profile) {
+        profileId = profile.id;
+      } else {
+        const { data: newProfile } = await supabase.from('profiles').insert({
+          user_id: currentUser.id,
+          role: 'user'
+        }).select('id').single();
+        if (newProfile) profileId = newProfile.id;
+      }
+
       const payload = {
-        user_id: currentUser?.id || null,
+        user_id: currentUser.id,
+        profile_id: profileId,
         category: form.category,
         estimated_weight: Number(form.weight_kg) || null,
         weight_kg: Number(form.weight_kg) || null,
