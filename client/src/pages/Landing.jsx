@@ -187,7 +187,7 @@ function Hero({ lang, setLang }) {
             <span className="relative z-10 flex items-center gap-2">{lang === 'en' ? 'Book Free Pickup' : 'முன்பதிவு'}</span>
             <motion.div className="absolute inset-0 bg-[#B2AC88]" initial={{ x: '-100%' }} whileHover={{ x: 0 }} transition={{ type: 'tween', duration: 0.3 }} />
           </Link>
-          <Link to="/register" className="inline-flex items-center justify-center gap-2 px-6 md:py-4 text-sm md:text-base font-semibold rounded-full border border-[#98FF98]/30 bg-[#98FF98]/5 backdrop-blur-md text-[#98FF98] hover:bg-[#98FF98]/10 transition-all">
+          <Link to="/register" className="inline-flex items-center justify-center gap-2 px-6 py-3 md:py-4 md:px-8 text-sm md:text-base font-semibold rounded-full border border-[#98FF98]/30 bg-[#98FF98]/5 backdrop-blur-md text-[#98FF98] hover:bg-[#98FF98]/10 transition-all">
             {lang === 'en' ? 'Get Started' : 'துவக்கு'}
           </Link>
         </motion.div>
@@ -560,7 +560,7 @@ function CTA({ lang }) {
 
             <Link
               to="/register"
-              className="inline-flex items-center justify-center gap-2 px-6 md:py-4 py-3 md:px-8 text-sm md:text-base font-bold rounded-full border border-white/40 bg-white/10 text-black hover:bg-white/20 transition-all shadow-[0_0_18px_rgba(152,255,152,0.22)]"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 md:py-4 md:px-8 text-sm md:text-base font-bold rounded-full border border-white/40 bg-white/10 text-black hover:bg-white/20 transition-all shadow-[0_0_18px_rgba(152,255,152,0.22)]"
             >
               {lang === 'en' ? 'Create Account' : 'கணக்கு உருவாக்கு'}
             </Link>

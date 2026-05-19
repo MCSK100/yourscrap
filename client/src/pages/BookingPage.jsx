@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { motion } from 'framer-motion';
+import Card from '../components/Card.jsx';
 import Loader from '../components/Loader.jsx';
 import { supabase } from '../services/supabaseClient.js';
 import { getCurrentUser } from '../services/auth.js';
