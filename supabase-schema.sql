@@ -1,126 +1,70 @@
--- Supabase schema for Eco Scrap Platform
--- Tables: profiles, price_list, pickups
--- Includes relationships, indexes, row-level security, and admin/user policies
+drop table if exists public.reward_transactions cascade;
+drop table if exists public.profiles cascade;
+drop table if exists public.price_list cascade;
+drop table if exists public.pickups cascade;
+drop table if exists public.settings cascade;
 
 create extension if not exists pgcrypto;
 
--- Profiles table tracks user metadata and role
-create table if not exists public.profiles (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null unique,
-  full_name text,
-  email text,
-  phone text,
-  role text not null default 'user' check (role in ('user', 'admin')),
-  created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now())
-);
-
-create index if not exists profiles_user_id_idx on public.profiles (user_id);
-create index if not exists profiles_role_idx on public.profiles (role);
-
--- Price list for recycle categories and item pricing
-create table if not exists public.price_list (
-  id uuid primary key default gen_random_uuid(),
-  category text not null,
-  item_type text not null,
-  description text,
-  unit text not null default 'kg',
-  price_cents integer not null check (price_cents >= 0),
-  active boolean not null default true,
-  created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now())
-);
-
-create index if not exists price_list_category_idx on public.price_list (category);
-create index if not exists price_list_item_type_idx on public.price_list (item_type);
-
--- Pickups table stores requests and status updates
 create table if not exists public.pickups (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null,
-  profile_id uuid not null,
-  price_list_id uuid,
-  category text not null,
-  item_name text not null,
-  weight_kg numeric(8,2) not null check (weight_kg >= 0),
-  estimated_value_cents integer not null check (estimated_value_cents >= 0),
-  final_value_cents integer default 0 check (final_value_cents >= 0),
-  status text not null default 'pending' check (status in ('pending', 'confirmed', 'collected', 'cancelled', 'completed')),
-  pickup_date text,
-  preferred_time text,
-  schedule_at timestamptz not null,
+  customer_name text not null,
+  customer_phone text not null,
+  customer_email text,
   pickup_address text not null,
-  image_url text,
+  location_lat numeric,
+  location_lng numeric,
+  items jsonb default '[]'::jsonb,
   notes text,
+  status text not null default 'pending' check (status in ('pending', 'confirmed', 'in_progress', 'completed', 'cancelled')),
+  preferred_date date,
+  preferred_time text,
   created_at timestamptz not null default timezone('utc', now()),
-  updated_at timestamptz not null default timezone('utc', now()),
-  constraint fk_pickup_user foreign key (user_id) references auth.users(id) on delete cascade,
-  constraint fk_pickup_profile foreign key (profile_id) references public.profiles(id) on delete cascade,
-  constraint fk_pickup_price_list foreign key (price_list_id) references public.price_list(id) on delete set null
+  updated_at timestamptz not null default timezone('utc', now())
 );
 
-create index if not exists pickups_user_id_idx on public.pickups (user_id);
 create index if not exists pickups_status_idx on public.pickups (status);
-create index if not exists pickups_schedule_at_idx on public.pickups (schedule_at);
+create index if not exists pickups_created_at_idx on public.pickups (created_at desc);
+create index if not exists pickups_phone_idx on public.pickups (customer_phone);
 
--- Enable row-level security for protected tables
-alter table public.profiles enable row level security;
-alter table public.price_list enable row level security;
+create table if not exists public.settings (
+  id uuid primary key default gen_random_uuid(),
+  key text not null unique,
+  value jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
 alter table public.pickups enable row level security;
+alter table public.settings enable row level security;
 
--- Profiles policies
-drop policy if exists "Profiles can select own record" on public.profiles;
-create policy "Profiles can select own record" on public.profiles
-  for select
-  using (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
+drop policy if exists "Anyone can insert pickups" on public.pickups;
+drop policy if exists "Admin can manage pickups" on public.pickups;
+drop policy if exists "Anyone can read settings" on public.settings;
+drop policy if exists "Admin can manage settings" on public.settings;
 
-drop policy if exists "Profiles can insert own record" on public.profiles;
-create policy "Profiles can insert own record" on public.profiles
+create policy "Anyone can insert pickups" on public.pickups
   for insert
-  with check (auth.uid() = user_id);
+  with check (true);
 
-drop policy if exists "Profiles can update own record" on public.profiles;
-create policy "Profiles can update own record" on public.profiles
-  for update
-  using (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'))
-  with check (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
-
-drop policy if exists "Profiles admin full access" on public.profiles;
-create policy "Profiles admin full access" on public.profiles
-  for delete
-  using (exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
-
--- Price list policies
-drop policy if exists "Price list authenticated select" on public.price_list;
-create policy "Price list authenticated select" on public.price_list
-  for select
-  using (auth.role() = 'authenticated');
-
-drop policy if exists "Price list admin modify" on public.price_list;
-create policy "Price list admin modify" on public.price_list
+create policy "Admin can manage pickups" on public.pickups
   for all
-  using (exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'))
-  with check (exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
+  using (true)
+  with check (true);
 
--- Pickups policies
-drop policy if exists "Pickups can select own records" on public.pickups;
-create policy "Pickups can select own records" on public.pickups
+create policy "Anyone can read settings" on public.settings
   for select
-  using (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
+  using (true);
 
-drop policy if exists "Pickups can insert own records" on public.pickups;
-create policy "Pickups can insert own records" on public.pickups
-  for insert
-  with check (auth.uid() = user_id);
+create policy "Admin can manage settings" on public.settings
+  for all
+  using (true)
+  with check (true);
 
-drop policy if exists "Pickups can update own records" on public.pickups;
-create policy "Pickups can update own records" on public.pickups
-  for update
-  using (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'))
-  with check (auth.uid() = user_id or exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
-
-drop policy if exists "Pickups admin delete" on public.pickups;
-create policy "Pickups admin delete" on public.pickups
-  for delete
-  using (exists(select 1 from public.profiles as p where p.user_id = auth.uid() and p.role = 'admin'));
+insert into public.settings (key, value) values
+('hero_content', '{"title":"YourScrap","subtitle":"Your Scrap, Our Green Future.","tagline_ta":"குப்பையை காசாக்குங்கள்","description_en":"Schedule your pickup for Saturday or Sunday.","description_ta":"சனி அல்லது ஞாயிறு அன்று pickupக்கு முன்பதிவு செய்யுங்கள்."}'::jsonb),
+('price_rates', '[{"category":"Iron / Steel","price":"₹18-25/kg","color":"from-orange-500 to-red-500"},{"category":"Aluminum","price":"₹80-120/kg","color":"from-blue-500 to-cyan-500"},{"category":"Copper","price":"₹350-450/kg","color":"from-amber-600 to-yellow-500"},{"category":"Brass","price":"₹250-320/kg","color":"from-yellow-600 to-orange-500"},{"category":"Plastic (PET)","price":"₹8-15/kg","color":"from-green-500 to-emerald-500"},{"category":"Paper","price":"₹6-12/kg","color":"from-stone-500 to-neutral-500"}]'::jsonb),
+('scrap_categories', '[{"icon":"🔩","title":"Iron & Steel","description":"Old pipes, utensils, construction waste","color":"from-orange-500 to-red-500"},{"icon":"🔌","title":"Copper","description":"Wires, pipes, electrical components","color":"from-amber-600 to-yellow-500"},{"icon":"⚙️","title":"Aluminum","description":"Cans, foil, kitchenware","color":"from-blue-400 to-cyan-400"},{"icon":"🎺","title":"Brass","description":"Fittings, decorative items, old jewelry","color":"from-yellow-500 to-orange-500"},{"icon":"🧴","title":"Plastic","description":"PET bottles, containers, wrappers","color":"from-green-400 to-emerald-500"},{"icon":"📰","title":"Paper","description":"Newspapers, cardboard, books","color":"from-stone-400 to-neutral-400"}]'::jsonb),
+('stats', '[{"value":"10K+","label":"Pickups Completed"},{"value":"500+","label":"Tons Recycled"},{"value":"98%","label":"Customer Satisfaction"}]'::jsonb),
+('features', '[{"title":"Instant Booking","description":"Book your pickup in under 60 seconds. No calls, no waiting.","ta":"உடனடி முன்பதிவு"},{"title":"Fair Prices","description":"Get real-time market rates for your scrap. No hidden fees.","ta":"சரியான விலை"},{"title":"Eco Impact","description":"Every pickup saves 2.5kg CO₂. Track your contribution.","ta":"சூழல் பாதுகாப்பு"},{"title":"Free Pickup","description":"We come to your doorstep. Free for orders above 10kg.","ta":"இலவச pickup"}]'::jsonb),
+('contact', '{"phone":"9080405581","area":"Coimbatore, Tamilnadu","whatsapp":"9080405581"}'::jsonb)
+on conflict (key) do nothing;

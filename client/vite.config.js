@@ -40,17 +40,6 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/api\.cloudinary\.com\/v1_1\/.+\/auto\/upload$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'cloudinary-uploads',
-              expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 7 * 24 * 60 * 60
-              }
-            }
-          },
-          {
             urlPattern: /^\/api\/.*$/,
             handler: 'NetworkFirst',
             options: {

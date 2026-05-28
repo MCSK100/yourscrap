@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://yourscrap.in/sitemap.xml

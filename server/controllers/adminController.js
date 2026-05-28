@@ -1,78 +1,25 @@
 import { supabaseAdmin } from '../utils/supabaseClient.js';
 
-const requireAdmin = (req, res) => {
-  if (req.user?.role !== 'admin') {
-    res.status(403).json({ error: 'Admin access required' });
-    return false;
-  }
-  return true;
-};
-
-const monthKey = (dateString) => {
-  const date = new Date(dateString);
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-  return `${year}-${month}`;
-};
-
-export const getAnalytics = async (req, res, next) => {
-  try {
-    if (!requireAdmin(req, res)) return;
-
-    const { data, error } = await supabaseAdmin
-      .from('pickups')
-      .select('status,created_at,final_value_cents');
-
-    if (error) {
-      return res.status(500).json({ error: 'Failed to fetch analytics data' });
-    }
-
-    const revenueByMonth = {};
-    const statusCounts = {
-      pending: 0,
-      confirmed: 0,
-      collected: 0,
-      cancelled: 0,
-      completed: 0
-    };
-    let totalRevenueCents = 0;
-
-    data.forEach((pickup) => {
-      const bucket = monthKey(pickup.created_at);
-      const value = Number(pickup.final_value_cents || 0);
-      totalRevenueCents += value;
-      revenueByMonth[bucket] = (revenueByMonth[bucket] || 0) + value;
-      if (statusCounts[pickup.status] !== undefined) {
-        statusCounts[pickup.status] += 1;
-      }
-    });
-
-    const monthlyRevenue = Object.entries(revenueByMonth)
-      .map(([month, revenue_cents]) => ({ month, revenue_cents }))
-      .sort((a, b) => a.month.localeCompare(b.month));
-
-    return res.json({
-      monthlyRevenue,
-      statusCounts,
-      totalRevenueCents,
-      totalPickups: data.length
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
-
 export const getPickupList = async (req, res, next) => {
   try {
-    if (!requireAdmin(req, res)) return;
-
-    const { data, error } = await supabaseAdmin
+    const { status, search } = req.query;
+    let query = supabaseAdmin
       .from('pickups')
-      .select('id, user_id, category, item_name, status, schedule_at, pickup_address, estimated_value_cents, final_value_cents, created_at')
+      .select('*')
       .order('created_at', { ascending: false });
 
+    if (status && status !== 'all') {
+      query = query.eq('status', status);
+    }
+
+    if (search) {
+      query = query.or(`customer_name.ilike.%${search}%,customer_phone.ilike.%${search}%,pickup_address.ilike.%${search}%`);
+    }
+
+    const { data, error } = await query;
+
     if (error) {
-      return res.status(500).json({ error: 'Unable to fetch pickup list' });
+      return res.status(500).json({ error: 'Unable to fetch pickups' });
     }
 
     return res.json({ pickups: data });
@@ -81,31 +28,30 @@ export const getPickupList = async (req, res, next) => {
   }
 };
 
-export const updatePickupStatus = async (req, res, next) => {
+export const updatePickup = async (req, res, next) => {
   try {
-    if (!requireAdmin(req, res)) return;
-
     const { id } = req.params;
-    const { status, final_value_cents } = req.body;
-    const allowedStatuses = ['pending', 'confirmed', 'collected', 'cancelled', 'completed'];
-
-    if (!status && final_value_cents === undefined) {
-      return res.status(400).json({ error: 'At least one update field is required' });
-    }
-
-    if (status && !allowedStatuses.includes(status)) {
-      return res.status(400).json({ error: 'Invalid status value' });
-    }
+    const { status, notes } = req.body;
+    const allowedStatuses = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'];
 
     const updatePayload = {};
-    if (status) updatePayload.status = status;
-    if (final_value_cents !== undefined) {
-      const amount = Number(final_value_cents);
-      if (Number.isNaN(amount) || amount < 0) {
-        return res.status(400).json({ error: 'final_value_cents must be a non-negative number' });
+
+    if (status) {
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Invalid status value' });
       }
-      updatePayload.final_value_cents = amount;
+      updatePayload.status = status;
     }
+
+    if (notes !== undefined) {
+      updatePayload.notes = notes;
+    }
+
+    if (Object.keys(updatePayload).length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    updatePayload.updated_at = new Date().toISOString();
 
     const { data, error } = await supabaseAdmin
       .from('pickups')
@@ -115,10 +61,105 @@ export const updatePickupStatus = async (req, res, next) => {
       .single();
 
     if (error) {
-      return res.status(500).json({ error: 'Failed to update pickup status' });
+      return res.status(500).json({ error: 'Failed to update pickup' });
     }
 
     return res.json({ pickup: data });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deletePickup = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabaseAdmin
+      .from('pickups')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to delete pickup' });
+    }
+
+    return res.json({ message: 'Pickup deleted' });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getSettings = async (req, res, next) => {
+  try {
+    const { key } = req.query;
+
+    let query = supabaseAdmin.from('settings').select('*');
+
+    if (key) {
+      query = query.eq('key', key).single();
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to fetch settings' });
+    }
+
+    return res.json({ settings: data });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const updateSetting = async (req, res, next) => {
+  try {
+    const { key } = req.params;
+    const { value } = req.body;
+
+    if (!key || value === undefined) {
+      return res.status(400).json({ error: 'key and value are required' });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from('settings')
+      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to update setting' });
+    }
+
+    return res.json({ setting: data });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getAnalytics = async (req, res, next) => {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('pickups')
+      .select('status, created_at');
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to fetch analytics' });
+    }
+
+    const statusCounts = {
+      pending: 0, confirmed: 0, in_progress: 0, completed: 0, cancelled: 0
+    };
+
+    data.forEach((pickup) => {
+      if (statusCounts[pickup.status] !== undefined) {
+        statusCounts[pickup.status] += 1;
+      }
+    });
+
+    return res.json({
+      statusCounts,
+      totalPickups: data.length
+    });
   } catch (error) {
     return next(error);
   }
