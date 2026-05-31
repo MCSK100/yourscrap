@@ -1,168 +1,97 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import Card from '../components/Card.jsx';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Check, Phone } from 'lucide-react';
+import axios from 'axios';
+import SeoHead from '../components/SeoHead';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import WhatsAppButton from '../components/WhatsAppButton';
 
-const BRAND_NAME = 'YourScrap';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const WHATSAPP_NUMBER = '9080405581';
-const API_URL = import.meta.env.VITE_API_URL || '';
 
-const categoryOptions = [
-  { value: 'iron', label: 'Iron & Steel', icon: '🔩' },
-  { value: 'copper', label: 'Copper', icon: '🔌' },
-  { value: 'aluminum', label: 'Aluminum', icon: '⚙️' },
-  { value: 'brass', label: 'Brass', icon: '🎺' },
-  { value: 'plastic', label: 'Plastic', icon: '🧴' },
-  { value: 'paper', label: 'Paper', icon: '📰' },
-  { value: 'ewaste', label: 'E-Waste', icon: '💻' },
-  { value: 'other', label: 'Other', icon: '📦' },
+const scrapCategories = [
+  { id: 'iron', label: 'Iron & Steel', icon: '🔩' },
+  { id: 'copper', label: 'Copper', icon: '🔌' },
+  { id: 'aluminum', label: 'Aluminum', icon: '⚙️' },
+  { id: 'brass', label: 'Brass', icon: '🎺' },
+  { id: 'plastic', label: 'Plastic', icon: '🧴' },
+  { id: 'paper', label: 'Paper', icon: '📰' },
+  { id: 'ewaste', label: 'E-Waste', icon: '💻' },
+  { id: 'other', label: 'Other', icon: '📦' },
 ];
 
 const timeSlots = [
-  '09:00-11:00', '11:00-13:00', '13:00-15:00', '15:00-17:00', '17:00-19:00',
+  '9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM',
+  '12:00 PM - 1:00 PM', '2:00 PM - 3:00 PM', '3:00 PM - 4:00 PM',
+  '4:00 PM - 5:00 PM', '5:00 PM - 6:00 PM',
 ];
 
-const initialItem = { category: 'iron', name: '', weight_kg: '' };
+const areas = [
+  'Peelamedu', 'Gandhipuram', 'RS Puram', 'Singanallur',
+  'Saravanampatti', 'Ukkadam', 'Vadavalli', 'Saibaba Colony',
+  'Kuniyamuthur', 'Podanur', 'Other',
+];
 
 export default function BookingPage() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({
-    customer_name: '',
-    customer_phone: '',
-    pickup_address: '',
-    preferred_date: '',
-    preferred_time: '',
-    notes: '',
-    items: [{ ...initialItem }],
-  });
   const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(null);
-  const [lang, setLang] = useState('en');
 
-  const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
+  const [form, setForm] = useState({
+    name: '', phone: '', email: '',
+    address: '', area: '', landmark: '',
+    items: [], notes: '',
+    date: '', time: '',
+  });
 
-  const handleItemChange = (index, field, value) => {
-    setForm((prev) => {
-      const items = [...prev.items];
-      items[index] = { ...items[index], [field]: value };
-      return { ...prev, items };
-    });
-  };
+  const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
-  const addItem = () => {
+  const toggleItem = (id) => {
     setForm((prev) => ({
       ...prev,
-      items: [...prev.items, { ...initialItem }],
+      items: prev.items.includes(id) ? prev.items.filter((i) => i !== id) : [...prev.items, id],
     }));
   };
 
-  const removeItem = (index) => {
-    if (form.items.length <= 1) return;
-    setForm((prev) => ({
-      ...prev,
-      items: prev.items.filter((_, i) => i !== index),
-    }));
-  };
-
-  const getCategoryLabel = (value) => {
-    const cat = categoryOptions.find((c) => c.value === value);
-    return cat ? cat.label : value;
-  };
-
-  const validateStep = () => {
-    setError('');
-    if (step === 1) {
-      if (!form.customer_name || !form.customer_phone) {
-        setError(lang === 'en' ? 'Please enter your name and phone number.' : 'தயவுசெய்து உங்கள் பெயர் மற்றும் தொலைபேசி எண்ணை உள்ளிடவும்.');
-        return false;
-      }
-      return true;
-    }
-    if (step === 2) {
-      const hasEmpty = form.items.some((item) => !item.name);
-      if (hasEmpty) {
-        setError(lang === 'en' ? 'Please fill in all item names.' : 'தயவுசெய்து எல்லா பொருட்களின் பெயர்களையும் நிரப்பவும்.');
-        return false;
-      }
-      return true;
-    }
-    if (step === 3) {
-      if (!form.pickup_address || !form.preferred_date || !form.preferred_time) {
-        setError(lang === 'en' ? 'Please complete address, date, and time.' : 'தயவுசெய்து முகவரி, தேதி மற்றும் நேரத்தை முடிக்கவும்.');
-        return false;
-      }
-      return true;
-    }
-    return true;
-  };
-
-  const nextStep = () => {
-    if (!validateStep()) return;
-    setStep((prev) => Math.min(prev + 1, 3));
-  };
-
-  const prevStep = () => {
-    setError('');
-    setStep((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleWhatsAppRedirect = (pickup) => {
-    const itemList = form.items.map((i) => `${i.name} (${i.weight_kg || '?'}kg)`).join(', ');
-    const message = lang === 'en'
-      ? `Hi ${BRAND_NAME}! I just booked a pickup.\nName: ${pickup.customer_name}\nPhone: ${pickup.customer_phone}\nItems: ${itemList}\nAddress: ${pickup.pickup_address}\nDate: ${pickup.preferred_date}\nTime: ${pickup.preferred_time}\nPlease confirm.`
-      : `வணக்கம் ${BRAND_NAME}! நான் pickup புக் செய்துள்ளேன்.\nபெயர்: ${pickup.customer_name}\nதொலைபேசி: ${pickup.customer_phone}\nபொருட்கள்: ${itemList}\nமுகவரி: ${pickup.pickup_address}\nதேதி: ${pickup.preferred_date}\nநேரம்: ${pickup.preferred_time}\nஉறுதிப்படுத்தவும்.`;
-    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(waUrl, '_blank');
+  const canProceed = () => {
+    if (step === 1) return form.name && form.phone && form.phone.length >= 10;
+    if (step === 2) return form.items.length > 0 && form.address;
+    if (step === 3) return form.date && form.time;
+    return false;
   };
 
   const handleSubmit = async () => {
-    if (!validateStep()) return;
     setSubmitting(true);
     setError('');
 
     try {
       const payload = {
-        customer_name: form.customer_name,
-        customer_phone: form.customer_phone,
-        pickup_address: form.pickup_address,
-        preferred_date: form.preferred_date || null,
-        preferred_time: form.preferred_time || null,
-        notes: form.notes || null,
-        items: form.items.map((item) => ({
-          category: item.category,
-          name: item.name,
-          weight_kg: item.weight_kg ? Number(item.weight_kg) : null,
-        })),
+        customer_name: form.name,
+        customer_phone: form.phone,
+        customer_email: form.email || undefined,
+        pickup_address: `${form.address}, ${form.area}${form.landmark ? `, near ${form.landmark}` : ''}`,
+        items: form.items.map((id) => {
+          const cat = scrapCategories.find((c) => c.id === id);
+          return cat ? { type: cat.label, icon: cat.icon } : { type: id };
+        }),
+        notes: form.notes || undefined,
+        preferred_date: form.date,
+        preferred_time: form.time,
       };
 
-      const res = await fetch(`${API_URL}/api/pickups`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      await axios.post(`${API_URL}/pickups`, payload);
 
-      const data = await res.json();
+      const msg = `Hi YourScrap! I've booked a pickup.%0A%0AName: ${form.name}%0APhone: ${form.phone}%0AAddress: ${form.address}, ${form.area}%0ADate: ${form.date}%0ATime: ${form.time}%0AItems: ${form.items.map((id) => scrapCategories.find((c) => c.id === id)?.label).join(', ')}`;
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to book pickup');
-      }
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 
-      setSuccess(data.pickup);
-      handleWhatsAppRedirect(data.pickup);
-      setForm({
-        customer_name: '',
-        customer_phone: '',
-        pickup_address: '',
-        preferred_date: '',
-        preferred_time: '',
-        notes: '',
-        items: [{ ...initialItem }],
-      });
-      setStep(1);
-    } catch (err) {
-      setError(err?.message || (lang === 'en' ? 'Unable to submit booking.' : 'முன்பதிவு செய்யமுடியவில்லை.'));
+      setSuccess(true);
+    } catch {
+      setError('Failed to submit. Please try again or contact us on WhatsApp.');
     } finally {
       setSubmitting(false);
     }
@@ -170,246 +99,220 @@ export default function BookingPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-6">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full">
-          <Card title={lang === 'en' ? 'Pickup Booked!' : 'முன்பதிவு உறுதி!'}
-            description={lang === 'en' ? 'Your request is received. We will contact you shortly.' : 'உங்கள் கோரிக்கை பெறப்பட்டது. நாங்கள் விரைவில் தொடர்புகொள்வோம்.'}>
-            <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-[#98FF98]/10 border border-[#98FF98]/30">
-                <p className="text-[#98FF98] font-medium">{lang === 'en' ? 'Booking ID' : 'முன்பதிவு எண்'}</p>
-                <p className="mt-1 text-slate-400 text-sm break-all">{success.id}</p>
-              </div>
-              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-700 space-y-2 text-sm">
-                <p><span className="text-slate-400">{lang === 'en' ? 'Name' : 'பெயர்'}:</span> <span className="text-white">{success.customer_name}</span></p>
-                <p><span className="text-slate-400">{lang === 'en' ? 'Phone' : 'தொலைபேசி'}:</span> <span className="text-white">{success.customer_phone}</span></p>
-                <p><span className="text-slate-400">{lang === 'en' ? 'Address' : 'முகவரி'}:</span> <span className="text-white">{success.pickup_address}</span></p>
-                <p><span className="text-slate-400">{lang === 'en' ? 'Date' : 'தேதி'}:</span> <span className="text-white">{success.preferred_date}</span></p>
-              </div>
-              <p className="text-slate-400 text-sm text-center">
-                {lang === 'en'
-                  ? 'We will confirm via WhatsApp. Save our number for updates.'
-                  : 'WhatsApp இல் உறுதிப்படுத்துவோம்.'}
-              </p>
+      <div className="bg-black min-h-screen">
+        <SeoHead title="Booking Confirmed - YourScrap" canonical="/book" />
+        <Navbar />
+        <div className="min-h-[80vh] flex items-center justify-center px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center max-w-md"
+          >
+            <div className="w-20 h-20 rounded-full bg-scrap-green/20 flex items-center justify-center mx-auto mb-6">
+              <Check className="w-10 h-10 text-scrap-green" />
             </div>
-          </Card>
-        </motion.div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">Booking Confirmed!</h1>
+            <p className="text-sm sm:text-base text-slate-400 mb-6">
+              We've sent the details to your WhatsApp. Our team will arrive at {form.time} on {form.date}.
+            </p>
+            <p className="text-xs text-slate-500 mb-8">
+              Need to reschedule? WhatsApp us at +91 {WHATSAPP_NUMBER}
+            </p>
+            <button
+              onClick={() => navigate('/')}
+              className="px-6 py-3 rounded-full bg-scrap-green text-black font-semibold text-sm hover:shadow-glow-green transition-all"
+            >
+              Back to Home
+            </button>
+          </motion.div>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <a href="/" className="text-slate-400 hover:text-white transition-colors text-sm">
-            &larr; {lang === 'en' ? 'Back to Home' : 'முகப்புக்கு'}
-          </a>
-          <div className="flex gap-2">
-            <button onClick={() => setLang('en')}
-              className={`px-3 py-1 rounded-full text-sm ${lang === 'en' ? 'bg-[#98FF98] text-black' : 'text-slate-400'}`}>EN</button>
-            <button onClick={() => setLang('ta')}
-              className={`px-3 py-1 rounded-full text-sm ${lang === 'ta' ? 'bg-[#98FF98] text-black' : 'text-slate-400'}`}>TA</button>
-          </div>
-        </div>
+    <div className="bg-black min-h-screen">
+      <SeoHead
+        title="Book Free Scrap Pickup in Coimbatore - YourScrap"
+        description="Schedule a free scrap pickup in Coimbatore. Select your items, choose a time slot, and get instant cash. Same-day pickup available."
+        canonical="/book"
+      />
 
-        <section className="rounded-3xl bg-[#0a150a] border border-[#98FF98]/20 p-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#98FF98]">
-                {lang === 'en' ? 'Schedule Pickup' : 'pickup முன்பதிவு'}
-              </p>
-              <h2 className="mt-2 text-3xl font-bold text-white">{BRAND_NAME}</h2>
-              <p className="text-slate-500 text-sm mt-1">Coimbatore, Tamilnadu</p>
-            </div>
-            <div className="rounded-3xl bg-[#98FF98]/10 px-4 py-3 text-sm text-[#98FF98]">
-              {lang === 'en' ? `Step ${step} of 3` : `படி ${step} / 3`}
-            </div>
-          </div>
-        </section>
+      <Navbar />
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <Card title={`${lang === 'en' ? 'Step' : 'படி'} ${step}`}
-            description={lang === 'en' ? 'Fill in your details to book a pickup.' : 'pickup பதிவு செய்ய விவரங்களை நிரப்பவும்.'}>
-            <div className="space-y-6">
-              {step === 1 && (
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      {lang === 'en' ? 'Your Name' : 'உங்கள் பெயர்'}
-                    </label>
-                    <input value={form.customer_name} onChange={(e) => handleChange('customer_name', e.target.value)}
-                      className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none"
-                      placeholder={lang === 'en' ? 'Enter your full name' : 'உங்கள் முழு பெயரை உள்ளிடவும்'} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      {lang === 'en' ? 'Phone Number' : 'தொலைபேசி எண்'}
-                    </label>
-                    <input value={form.customer_phone} onChange={(e) => handleChange('customer_phone', e.target.value)}
-                      type="tel"
-                      className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none"
-                      placeholder={lang === 'en' ? 'e.g. 9080405581' : 'எ.கா. 9080405581'} />
-                  </div>
+      <section className="relative pt-28 pb-20 overflow-hidden">
+        <div className="absolute inset-0 bg-grid pointer-events-none" />
+
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8 sm:mb-10"
+          >
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+              Book Free Scrap Pickup
+            </h1>
+            <p className="text-sm text-slate-500">Fill in your details and we'll be at your doorstep.</p>
+          </motion.div>
+
+          <div className="flex items-center justify-center gap-2 mb-8 sm:mb-10">
+            {[1, 2, 3].map((s) => (
+              <div key={s} className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                  s <= step ? 'bg-scrap-green text-black' : 'bg-white/[0.03] text-slate-600'
+                }`}>
+                  {s < step ? <Check className="w-4 h-4" /> : s}
                 </div>
+                {s < 3 && <div className={`w-12 sm:w-20 h-[2px] ${s < step ? 'bg-scrap-green' : 'bg-white/[0.06]'}`} />}
+              </div>
+            ))}
+          </div>
+
+          <div className="p-6 sm:p-8 rounded-2xl sm:rounded-3xl glass">
+            <AnimatePresence mode="wait">
+              {step === 1 && (
+                <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <h2 className="text-lg font-semibold text-white mb-6">Your Contact Details</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Full Name *</label>
+                      <input type="text" value={form.name} onChange={(e) => update('name', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm focus:outline-none focus:border-scrap-green/50 transition-colors"
+                        placeholder="Enter your name" />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Phone Number *</label>
+                      <input type="tel" value={form.phone} onChange={(e) => update('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm focus:outline-none focus:border-scrap-green/50 transition-colors"
+                        placeholder="10-digit phone number" />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Email (optional)</label>
+                      <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm focus:outline-none focus:border-scrap-green/50 transition-colors"
+                        placeholder="your@email.com" />
+                    </div>
+                  </div>
+                </motion.div>
               )}
 
               {step === 2 && (
-                <div className="space-y-5">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-sm font-medium text-slate-300">
-                      {lang === 'en' ? 'Items for Pickup' : 'பொருட்கள்'}
-                    </label>
-                    <button type="button" onClick={addItem}
-                      className="text-xs px-3 py-1.5 rounded-full bg-[#98FF98]/10 text-[#98FF98] hover:bg-[#98FF98]/20 transition-colors">
-                      + {lang === 'en' ? 'Add Item' : 'பொருள் சேர்'}
-                    </button>
+                <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <h2 className="text-lg font-semibold text-white mb-4">What are you selling?</h2>
+                  <p className="text-xs sm:text-sm text-slate-500 mb-4">Select all the types of scrap you have.</p>
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
+                    {scrapCategories.map((cat) => {
+                      const selected = form.items.includes(cat.id);
+                      return (
+                        <button key={cat.id} onClick={() => toggleItem(cat.id)}
+                          className={`flex items-center gap-2 p-3 sm:p-4 rounded-xl text-sm transition-all ${
+                            selected
+                              ? 'bg-scrap-green/20 border border-scrap-green/50 text-white'
+                              : 'bg-white/[0.03] border border-white/[0.06] text-slate-400 hover:border-white/20'
+                          }`}>
+                          <span className="text-lg">{cat.icon}</span>
+                          {cat.label}
+                        </button>
+                      );
+                    })}
                   </div>
 
-                  {form.items.map((item, index) => (
-                    <div key={index} className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-500">{lang === 'en' ? `Item ${index + 1}` : `பொருள் ${index + 1}`}</span>
-                        {form.items.length > 1 && (
-                          <button type="button" onClick={() => removeItem(index)}
-                            className="text-xs text-red-400 hover:text-red-300 transition-colors">
-                            {lang === 'en' ? 'Remove' : 'நீக்கு'}
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        <div>
-                          <label className="block text-xs text-slate-400 mb-1">{lang === 'en' ? 'Category' : 'வகை'}</label>
-                          <select value={item.category} onChange={(e) => handleItemChange(index, 'category', e.target.value)}
-                            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm text-white focus:border-[#98FF98] focus:outline-none">
-                            {categoryOptions.map((opt) => (
-                              <option key={opt.value} value={opt.value}>{opt.icon} {opt.label}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs text-slate-400 mb-1">{lang === 'en' ? 'Item Name' : 'பொருள் பெயர்'}</label>
-                          <input value={item.name} onChange={(e) => handleItemChange(index, 'name', e.target.value)}
-                            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm text-white focus:border-[#98FF98] focus:outline-none"
-                            placeholder={lang === 'en' ? 'e.g. Copper wire' : 'எ.கா. செம்பு கம்பி'} />
-                        </div>
-                        <div>
-                          <label className="block text-xs text-slate-400 mb-1">{lang === 'en' ? 'Weight (kg)' : 'எடை (கி.கி)'}</label>
-                          <input type="number" value={item.weight_kg} onChange={(e) => handleItemChange(index, 'weight_kg', e.target.value)}
-                            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm text-white focus:border-[#98FF98] focus:outline-none"
-                            placeholder="0.00" min="0" step="0.1" />
-                        </div>
-                      </div>
+                  <h2 className="text-lg font-semibold text-white mb-4">Pickup Address</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Area *</label>
+                      <select value={form.area} onChange={(e) => update('area', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm focus:outline-none focus:border-scrap-green/50 transition-colors">
+                        <option value="" className="bg-black">Select your area</option>
+                        {areas.map((a) => <option key={a} value={a} className="bg-black">{a}</option>)}
+                      </select>
                     </div>
-                  ))}
-                </div>
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Full Address *</label>
+                      <textarea value={form.address} onChange={(e) => update('address', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm focus:outline-none focus:border-scrap-green/50 transition-colors resize-none"
+                        rows={3} placeholder="Door number, street, building name" />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Landmark (optional)</label>
+                      <input type="text" value={form.landmark} onChange={(e) => update('landmark', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm focus:outline-none focus:border-scrap-green/50 transition-colors"
+                        placeholder="Nearby landmark" />
+                    </div>
+                  </div>
+                </motion.div>
               )}
 
               {step === 3 && (
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      {lang === 'en' ? 'Pickup Address' : 'pickup முகவரி'}
-                    </label>
-                    <textarea value={form.pickup_address} onChange={(e) => handleChange('pickup_address', e.target.value)}
-                      rows={3}
-                      className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none resize-none"
-                      placeholder={lang === 'en' ? 'Full address with landmark' : 'முழு முகவரி'} />
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2">
+                <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                  <h2 className="text-lg font-semibold text-white mb-4">Select Date & Time</h2>
+                  <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">
-                        {lang === 'en' ? 'Pickup Date' : 'pickup தேதி'}
-                      </label>
-                      <input type="date" value={form.preferred_date}
-                        onChange={(e) => handleChange('preferred_date', e.target.value)}
-                        min={new Date().toISOString().slice(0, 10)}
-                        className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none [color-scheme:dark]" />
+                      <label className="block text-sm text-slate-400 mb-2">Preferred Date *</label>
+                      <input type="date" value={form.date} onChange={(e) => update('date', e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm focus:outline-none focus:border-scrap-green/50 transition-colors" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">
-                        {lang === 'en' ? 'Preferred Time' : 'விருப்ப நேரம்'}
-                      </label>
-                      <select value={form.preferred_time} onChange={(e) => handleChange('preferred_time', e.target.value)}
-                        className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none">
-                        <option value="">{lang === 'en' ? 'Select time' : 'நேரம் தேர்வு'}</option>
+                      <label className="block text-sm text-slate-400 mb-2">Preferred Time *</label>
+                      <div className="grid grid-cols-2 gap-2">
                         {timeSlots.map((slot) => (
-                          <option key={slot} value={slot}>{slot}</option>
+                          <button key={slot} onClick={() => update('time', slot)}
+                            className={`p-2.5 rounded-xl text-xs transition-all ${
+                              form.time === slot
+                                ? 'bg-scrap-green/20 border border-scrap-green/50 text-scrap-green'
+                                : 'bg-white/[0.03] border border-white/[0.06] text-slate-400 hover:border-white/20'
+                            }`}>
+                            {slot}
+                          </button>
                         ))}
-                      </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-slate-400 mb-1.5">Notes (optional)</label>
+                      <textarea value={form.notes} onChange={(e) => update('notes', e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white text-sm focus:outline-none focus:border-scrap-green/50 transition-colors resize-none"
+                        rows={3} placeholder="Any special instructions?" />
                     </div>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      {lang === 'en' ? 'Notes (optional)' : 'குறிப்புகள்'}
-                    </label>
-                    <textarea value={form.notes} onChange={(e) => handleChange('notes', e.target.value)}
-                      rows={2}
-                      className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-white focus:border-[#98FF98] focus:outline-none resize-none"
-                      placeholder={lang === 'en' ? 'Special instructions...' : 'சிறப்பு அறிவுறுத்தல்கள்...'} />
-                  </div>
-                </div>
+                </motion.div>
               )}
+            </AnimatePresence>
 
-              {error && (
-                <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-red-400 bg-red-900/20 p-3 rounded-xl">{error}</motion.p>
-              )}
+            {error && <p className="text-red-400 text-xs mt-4">{error}</p>}
 
-              <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <button type="button" onClick={prevStep} disabled={step === 1 || submitting}
-                  className="rounded-3xl border border-slate-700 bg-slate-900 px-5 py-3 text-sm font-semibold text-slate-300 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50">
-                  {lang === 'en' ? 'Back' : 'மீண்டும்'}
+            <div className="flex justify-between mt-8 pt-6 border-t border-white/[0.06]">
+              {step > 1 ? (
+                <button onClick={() => setStep(step - 1)}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.06] text-sm text-slate-400 hover:text-white transition-all">
+                  <ArrowLeft className="w-4 h-4" /> Back
                 </button>
-                <div className="flex gap-3">
-                  {step < 3 ? (
-                    <button type="button" onClick={nextStep} disabled={submitting}
-                      className="rounded-3xl bg-gradient-to-r from-[#98FF98] to-[#B2AC88] px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
-                      {lang === 'en' ? 'Continue' : 'தொடர'}
-                    </button>
-                  ) : (
-                    <button type="button" onClick={handleSubmit} disabled={submitting}
-                      className="rounded-3xl bg-gradient-to-r from-[#98FF98] to-[#B2AC88] px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
-                      {submitting ? (lang === 'en' ? 'Booking...' : 'சமர்ப்பிக்கிறோம்...') : (lang === 'en' ? 'Book Pickup' : 'pickup முன்பதிவு')}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Card>
+              ) : <div />}
 
-          <Card title={lang === 'en' ? 'Summary' : 'சுருக்கம்'}
-            description={lang === 'en' ? 'Review your booking details.' : 'உங்கள் விவரங்களைப் பார்க்கவும்.'}>
-            <div className="space-y-4 text-slate-300 text-sm">
-              <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{lang === 'en' ? 'Your Details' : 'உங்கள் விவரங்கள்'}</p>
-                <p className="mt-1 text-white">{form.customer_name || '—'}</p>
-                <p className="text-slate-400">{form.customer_phone || '—'}</p>
-              </div>
-              {form.items.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{lang === 'en' ? 'Items' : 'பொருட்கள்'}</p>
-                  {form.items.map((item, i) => (
-                    <p key={i} className="text-white">
-                      {getCategoryLabel(item.category)}: {item.name || '—'} {item.weight_kg ? `(${item.weight_kg} kg)` : ''}
-                    </p>
-                  ))}
-                </div>
+              {step < 3 ? (
+                <button onClick={() => canProceed() && setStep(step + 1)}
+                  disabled={!canProceed()}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                    canProceed() ? 'bg-scrap-green text-black hover:shadow-glow-green' : 'bg-white/[0.03] text-slate-600 cursor-not-allowed'
+                  }`}>
+                  Next <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button onClick={handleSubmit} disabled={submitting || !canProceed()}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                    submitting ? 'bg-white/[0.03] text-slate-600' : 'bg-scrap-green text-black hover:shadow-glow-green'
+                  }`}>
+                  {submitting ? 'Submitting...' : 'Confirm Booking'}
+                </button>
               )}
-              <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{lang === 'en' ? 'Address' : 'முகவரி'}</p>
-                <p className="mt-1 text-white">{form.pickup_address || '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{lang === 'en' ? 'Date & Time' : 'தேதி & நேரம்'}</p>
-                <p className="mt-1 text-white">{form.preferred_date || '—'} {form.preferred_time || ''}</p>
-              </div>
             </div>
-          </Card>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <Footer />
+      <WhatsAppButton />
     </div>
   );
 }

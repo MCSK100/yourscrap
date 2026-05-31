@@ -1,375 +1,712 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { supabase } from '../services/supabaseClient.js';
+
+import {
+  Truck, ShieldCheck, Leaf, Zap, Star, ChevronRight,
+  ArrowRight, Clock, IndianRupee, Recycle, Users, Globe,
+  ChevronDown, CheckCircle, Phone, MessageCircle, Menu, X,
+  Award, Wallet, CalendarCheck, TrendingUp,
+} from 'lucide-react';
+
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import FloatingParticles from '../components/FloatingParticles';
+import AnimatedCounter from '../components/AnimatedCounter';
+import WhatsAppButton from '../components/WhatsAppButton';
+import { services } from '../data/services';
+import { testimonials } from '../data/testimonials';
 
 const BRAND_NAME = 'YourScrap';
 const WHATSAPP_NUMBER = '9080405581';
 
-const TAGLINE = {
-  en: 'Your Scrap, Our Green Future.',
-  ta: 'குப்பையை காசாக்குங்கள்',
-};
-
-const defaultStats = [
-  { value: '10K+', label: 'Pickups Completed' },
-  { value: '500+', label: 'Tons Recycled' },
-  { value: '98%', label: 'Customer Satisfaction' },
-];
-
-const defaultCategories = [
-  { icon: '🔩', title: 'Iron & Steel', description: 'Old pipes, utensils, construction waste', color: 'from-orange-500 to-red-500' },
-  { icon: '🔌', title: 'Copper', description: 'Wires, pipes, electrical components', color: 'from-amber-600 to-yellow-500' },
-  { icon: '⚙️', title: 'Aluminum', description: 'Cans, foil, kitchenware', color: 'from-blue-400 to-cyan-400' },
-  { icon: '🎺', title: 'Brass', description: 'Fittings, decorative items, old jewelry', color: 'from-yellow-500 to-orange-500' },
-  { icon: '🧴', title: 'Plastic', description: 'PET bottles, containers, wrappers', color: 'from-green-400 to-emerald-500' },
-  { icon: '📰', title: 'Paper', description: 'Newspapers, cardboard, books', color: 'from-stone-400 to-neutral-400' },
-];
-
-const defaultFeatures = [
-  { title: 'Instant Booking', description: 'Book your pickup in under 60 seconds. No calls, no waiting.', ta: 'உடனடி முன்பதிவு' },
-  { title: 'Fair Prices', description: 'Get real-time market rates for your scrap. No hidden fees.', ta: 'சரியான விலை' },
-  { title: 'Eco Impact', description: 'Every pickup saves 2.5kg CO₂. Track your contribution.', ta: 'சூழல் பாதுகாப்பு' },
-  { title: 'Free Pickup', description: 'We come to your doorstep. Free for orders above 10kg.', ta: 'இலவச pickup' },
-];
-
-const defaultPrices = [
-  { category: 'Iron / Steel', price: '₹18-25/kg', color: 'from-orange-500 to-red-500' },
-  { category: 'Aluminum', price: '₹80-120/kg', color: 'from-blue-500 to-cyan-500' },
-  { category: 'Copper', price: '₹350-450/kg', color: 'from-amber-600 to-yellow-500' },
-  { category: 'Brass', price: '₹250-320/kg', color: 'from-yellow-600 to-orange-500' },
-  { category: 'Plastic (PET)', price: '₹8-15/kg', color: 'from-green-500 to-emerald-500' },
-  { category: 'Paper', price: '₹6-12/kg', color: 'from-stone-500 to-neutral-500' },
-];
-
 const heroBgImages = [
   'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1920&q=85&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&auto=format&fit=crop&q=60',
-  'https://images.unsplash.com/photo-1588803103006-2822e4b2619d?q=80&w=1170&auto=format&fit=crop',
-  'https://plus.unsplash.com/premium_photo-1661753249955-398718029b07?w=600&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1617529497471-921863d0e0f4?w=1920&q=85&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1588803103006-2822e4b2619d?w=1920&q=85&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1920&q=85&auto=format&fit=crop',
 ];
 
-const LeafIcon = () => (
-  <img src="/scraplogo.png" alt="YourScrap logo" className="w-[17rem]" />
-);
+const trustBadges = [
+  { icon: ShieldCheck, label: 'Verified Business', desc: 'Registered scrap buyer' },
+  { icon: Leaf, label: 'Eco-Friendly', desc: '100% recycled' },
+  { icon: Wallet, label: 'Instant Payment', desc: 'UPI / Cash on spot' },
+  { icon: CalendarCheck, label: 'Same-Day Pickup', desc: 'When you need it' },
+];
 
-const whatsAppIcon = (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 6 6v.5z"/>
-  </svg>
-);
+const stats = [
+  { end: 10000, suffix: '+', label: 'Pickups Completed' },
+  { end: 500, suffix: 'T+', label: 'Tons Recycled' },
+  { end: 98, suffix: '%', label: 'Happy Customers' },
+  { end: 50, suffix: '+', label: 'Areas Covered' },
+];
+
+const howItWorks = [
+  {
+    icon: Phone, step: '01', title: 'Book Online',
+    desc: 'Tell us what scrap you have and pick your preferred time slot in under 60 seconds.',
+  },
+  {
+    icon: Truck, step: '02', title: 'Free Pickup',
+    desc: 'Our team arrives at your doorstep at the scheduled time. We weigh your scrap digitally.',
+  },
+  {
+    icon: IndianRupee, step: '03', title: 'Get Paid Instantly',
+    desc: 'Receive payment via UPI, bank transfer, or cash. No delays, no hidden deductions.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Is scrap pickup really free?',
+    a: 'Yes, we offer completely free doorstep pickup across Coimbatore for orders above 10 kg. No hidden charges, no transportation fees.',
+  },
+  {
+    q: 'How do you determine scrap prices?',
+    a: 'Our rates are based on current market prices and updated daily. We use digital weighing scales for accurate measurement and pay you instantly.',
+  },
+  {
+    q: 'Do you offer same-day pickup?',
+    a: 'Yes, same-day pickup is available subject to slot availability. Book early in the day for best availability.',
+  },
+  {
+    q: 'What types of scrap do you accept?',
+    a: 'We accept Iron, Steel, Copper, Aluminum, Plastic, Paper, Cardboard, E-Waste, and Brass. Contact us if you are unsure about a specific item.',
+  },
+  {
+    q: 'How do I get paid for my scrap?',
+    a: 'Payment is made instantly on the spot via UPI (GPay, PhonePe, Paytm), bank transfer, or cash. You choose the method.',
+  },
+  {
+    q: 'Do you serve my area in Coimbatore?',
+    a: 'We serve all major areas including Peelamedu, Gandhipuram, RS Puram, Singanallur, Saravanampatti, Ukkadam, Vadavalli, and more. Contact us if you are outside these areas.',
+  },
+];
 
 function FloatingOrb({ className, delay = 0 }) {
   return (
-    <motion.div className={`absolute rounded-full blur-3xl opacity-40 ${className}`}
-      animate={{ y: [0, -30, 0], x: [0, 20, 0], scale: [1, 1.1, 1] }}
-      transition={{ duration: 8, repeat: Infinity, delay, ease: 'easeInOut' }}
+    <motion.div
+      className={`absolute rounded-full blur-3xl opacity-30 ${className}`}
+      animate={{ y: [0, -40, 0], x: [0, 25, 0], scale: [1, 1.15, 1] }}
+      transition={{ duration: 10, repeat: Infinity, delay, ease: 'easeInOut' }}
     />
   );
 }
 
-function Navbar({ lang, setLang }) {
+function SectionHeading({ title, subtitle, gradient = 'from-scrap-green to-scrap-gold' }) {
   return (
-    <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} className="fixed top-0 left-0 right-0 z-50 px-4 py-3 bg-black/30 backdrop-blur-md">
-      <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
-        <Link to="/" className="flex items-center gap-2" aria-label="YourScrap Home">
-          <LeafIcon />
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link to="/book" className="px-5 py-2.5 rounded-full bg-[#98FF98] text-black text-sm font-semibold hover:bg-[#7bdc78] transition-colors">
-            {lang === 'en' ? 'Book Now' : 'முன்பதிவு'}
-          </Link>
-        </div>
-      </div>
-    </motion.nav>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      className="text-center mb-12 sm:mb-16 lg:mb-20"
+    >
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+        <span className={`bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+          {title}
+        </span>
+      </h2>
+      {subtitle && (
+        <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          {subtitle}
+        </p>
+      )}
+    </motion.div>
   );
 }
 
-function Hero({ lang, setLang }) {
+function HeroSection() {
   const [currentBg, setCurrentBg] = useState(0);
+  const { scrollY } = useScroll();
+  const heroParallax = useTransform(scrollY, [0, 600], [0, 150]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBg((prev) => (prev + 1) % heroBgImages.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <motion.div style={{ y: heroParallax }} className="absolute inset-0">
+        {heroBgImages.map((img, i) => (
+          <div
+            key={i}
+            className="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-110"
+            style={{
+              backgroundImage: `url(${img})`,
+              opacity: i === currentBg ? 1 : 0,
+              transform: `scale(${i === currentBg ? 1.1 : 1.2})`,
+              transition: 'opacity 1.5s ease, transform 8s ease',
+            }}
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 via-40% to-black/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+      </motion.div>
+
+      <FloatingParticles count={30} />
+
+      <FloatingOrb className="w-96 h-96 bg-scrap-green/10 top-1/4 -left-48" delay={0} />
+      <FloatingOrb className="w-80 h-80 bg-scrap-gold/10 bottom-1/4 -right-40" delay={3} />
+
+      <div className="absolute inset-0 bg-grid pointer-events-none" />
+
+      <motion.div style={{ opacity }} className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 py-32 sm:py-40 lg:py-48">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-6 sm:mb-8"
+          >
+            <Star className="w-3.5 h-3.5 text-scrap-green fill-scrap-green" />
+            <span className="text-xs sm:text-sm text-scrap-green font-medium">
+              #1 Scrap Pickup Service in Coimbatore
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight mb-4 sm:mb-6 text-balance"
+          >
+            <span className="bg-gradient-to-br from-white via-white to-white/60 bg-clip-text text-transparent">
+              Book Free Scrap Pickup
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-scrap-green via-emerald-300 to-scrap-gold bg-clip-text text-transparent">
+              in Coimbatore
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed"
+          >
+            Turn old scrap into instant cash with fast doorstep pickup.
+            <span className="block sm:inline"> Best rates guaranteed. Same-day service available.</span>
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-10 sm:mb-16"
+          >
+            <Link
+              to="/book"
+              className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-full bg-scrap-green text-black overflow-hidden shadow-glow-green hover:shadow-glow-green transition-all duration-300"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                Book Free Pickup
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-scrap-green/80 to-emerald-400"
+                initial={{ x: '-100%' }}
+                whileHover={{ x: 0 }}
+                transition={{ type: 'tween', duration: 0.3 }}
+              />
+            </Link>
+
+            <Link
+              to="/#pricing"
+              className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-full glass-strong text-white hover:bg-white/[0.08] transition-all duration-300"
+            >
+              <span className="flex items-center gap-2">
+                Check Scrap Prices
+                <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+              </span>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+            className="flex flex-wrap justify-center gap-3 sm:gap-4"
+          >
+            {stats.slice(0, 3).map((stat) => (
+              <div
+                key={stat.label}
+                className="px-4 sm:px-5 py-3 rounded-2xl glass"
+              >
+                <AnimatedCounter end={stat.end} suffix={stat.suffix} label={stat.label} duration={2} />
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+      >
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="flex flex-col items-center gap-2 text-slate-600"
+        >
+          <span className="text-xs">Scroll to explore</span>
+          <ChevronDown className="w-4 h-4" />
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
+
+function TrustBadges() {
+  return (
+    <section className="relative py-12 sm:py-16 bg-black/50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+          {trustBadges.map((badge, i) => (
+            <motion.div
+              key={badge.label}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="relative group p-4 sm:p-6 rounded-2xl glass hover:bg-white/[0.05] transition-all duration-300"
+            >
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-scrap-green/10 flex items-center justify-center shrink-0 group-hover:bg-scrap-green/20 transition-colors">
+                  <badge.icon className="w-5 h-5 sm:w-6 sm:h-6 text-scrap-green" />
+                </div>
+                <div>
+                  <div className="text-sm sm:text-base font-semibold text-white">{badge.label}</div>
+                  <div className="text-xs sm:text-sm text-slate-500">{badge.desc}</div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ServicesSection() {
+  const [hoveredId, setHoveredId] = useState(null);
+
+  return (
+    <section id="services" className="relative py-section sm:py-section-lg overflow-hidden">
+      <div className="absolute inset-0 bg-grid pointer-events-none" />
+      <FloatingOrb className="w-80 h-80 bg-scrap-green/5 top-1/3 left-1/4" delay={2} />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+        <SectionHeading
+          title="We Buy All Types of Scrap"
+          subtitle="From household items to industrial waste. Get the best market rates for every type of scrap."
+        />
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {services.map((service, i) => {
+            const Icon = service.icon;
+            const isHovered = hoveredId === service.id;
+
+            return (
+              <motion.div
+                key={service.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ delay: i * 0.05 }}
+                onMouseEnter={() => setHoveredId(service.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer"
+              >
+                <div className="absolute inset-0">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    loading="lazy"
+                    className={`w-full h-full object-cover transition-all duration-700 ${
+                      isHovered ? 'scale-110' : 'scale-100'
+                    }`}
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${service.gradient} opacity-80 transition-opacity duration-300`} />
+                  <div className="absolute inset-0 bg-black/40" />
+                </div>
+
+                <div className="relative p-5 sm:p-6 lg:p-8 min-h-[240px] sm:min-h-[280px] flex flex-col justify-end">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-scrap-green/20 transition-colors">
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-scrap-green" />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-1">{service.title}</h3>
+                  <p className="text-xs sm:text-sm text-slate-300 mb-3 line-clamp-2">{service.description}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm sm:text-base font-semibold text-scrap-green">{service.price}</span>
+                    <span className="inline-flex items-center gap-1 text-xs text-white/60 group-hover:text-white transition-colors">
+                      Book Now <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                </div>
+
+                {isHovered && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="absolute inset-0 border-2 border-scrap-green/30 rounded-2xl sm:rounded-3xl pointer-events-none"
+                  />
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StatsSection() {
+  return (
+    <section className="relative py-section sm:py-section-lg overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-scrap-dark/50 to-black" />
+      <div className="absolute inset-0 bg-grid pointer-events-none" />
+
+      <FloatingOrb className="w-96 h-96 bg-scrap-gold/5 -left-48 top-0" delay={1} />
+      <FloatingOrb className="w-72 h-72 bg-scrap-green/5 -right-36 bottom-0" delay={4} />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+        <SectionHeading
+          title="YourScrap in Numbers"
+          subtitle="Trusted by thousands across Coimbatore. Here's our impact so far."
+        />
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12">
+          {stats.map((stat, i) => (
+            <div
+              key={stat.label}
+              className="p-6 sm:p-8 rounded-2xl sm:rounded-3xl glass text-center"
+            >
+              <AnimatedCounter end={stat.end} suffix={stat.suffix} label={stat.label} duration={2.5} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HowItWorksSection() {
+  return (
+    <section className="relative py-section sm:py-section-lg overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <SectionHeading
+          title="How It Works"
+          subtitle="Three simple steps to turn your scrap into cash. No hassle, no waiting."
+        />
+
+        <div className="relative">
+          <div className="hidden lg:block absolute top-1/2 left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-scrap-green/20 via-scrap-green/40 to-scrap-green/20 -translate-y-1/2" />
+
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
+            {howItWorks.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.step}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ delay: i * 0.2 }}
+                  className="relative flex flex-col items-center text-center p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl glass hover:bg-white/[0.03] transition-all duration-300"
+                >
+                  <div className="relative mb-6">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-scrap-green/10 flex items-center justify-center">
+                      <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-scrap-green" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-scrap-green text-black text-xs font-bold flex items-center justify-center">
+                      {item.step}
+                    </div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-3">{item.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PricingSection() {
+  const prices = [
+    { category: 'Iron / Steel', price: '₹18-25/kg', color: 'from-slate-500 to-slate-700' },
+    { category: 'Aluminum', price: '₹80-120/kg', color: 'from-cyan-500 to-blue-600' },
+    { category: 'Copper', price: '₹350-450/kg', color: 'from-amber-500 to-orange-600' },
+    { category: 'Brass', price: '₹250-320/kg', color: 'from-yellow-600 to-orange-700' },
+    { category: 'Plastic (PET)', price: '₹8-15/kg', color: 'from-emerald-500 to-green-600' },
+    { category: 'Paper', price: '₹6-12/kg', color: 'from-stone-500 to-neutral-600' },
+    { category: 'E-Waste', price: 'Varies', color: 'from-purple-500 to-violet-600' },
+  ];
+
+  return (
+    <section id="pricing" className="relative py-section sm:py-section-lg overflow-hidden">
+      <div className="absolute inset-0 bg-grid pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+        <SectionHeading
+          title="Today's Scrap Rates"
+          subtitle="Real-time market prices updated daily at 9 AM. Best rates guaranteed in Coimbatore."
+        />
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {prices.map((rate, i) => (
+            <motion.div
+              key={rate.category}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              whileHover={{ y: -4 }}
+              className="relative group p-4 sm:p-6 rounded-2xl glass hover:bg-white/[0.03] transition-all duration-300 overflow-hidden"
+            >
+              <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${rate.color} opacity-50`} />
+              <h3 className="text-xs sm:text-sm text-slate-400 mb-2">{rate.category}</h3>
+              <p className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-scrap-green to-scrap-gold bg-clip-text text-transparent">
+                {rate.price}
+              </p>
+              <div className="mt-3">
+                <Link
+                  to="/book"
+                  className="text-xs text-slate-600 group-hover:text-scrap-green transition-colors inline-flex items-center gap-1"
+                >
+                  Sell now <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TestimonialsSection() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4">
-      <div className="absolute inset-0">
-        {heroBgImages.map((img, i) => (
-          <div key={i} className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-            style={{ backgroundImage: `url(${img})`, opacity: i === currentBg ? 1 : 0 }} />
-        ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
-      </div>
+    <section className="relative py-section sm:py-section-lg overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-scrap-dark/30 to-black" />
+      <FloatingOrb className="w-96 h-96 bg-scrap-green/5 right-0 top-1/3" delay={5} />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto py-20 md:py-32 text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#98FF98]/10 backdrop-blur-md border border-[#98FF98]/20 mb-6 md:mb-8">
-          <button onClick={() => setLang('en')} aria-label="Switch to English"
-            className={`text-xs md:text-sm font-medium transition-colors ${lang === 'en' ? 'text-[#98FF98]' : 'text-slate-400 hover:text-white'}`}>EN</button>
-          <span className="text-slate-600">|</span>
-          <button onClick={() => setLang('ta')} aria-label="Switch to Tamil"
-            className={`text-xs md:text-sm font-medium transition-colors ${lang === 'ta' ? 'text-[#98FF98]' : 'text-slate-400 hover:text-white'}`}>TA</button>
-        </motion.div>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
+        <SectionHeading
+          title="What Our Customers Say"
+          subtitle="Join 10,000+ happy customers who trust YourScrap for their scrap pickup needs."
+        />
 
-        <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-6">
-          <span className="bg-gradient-to-r from-white via-[#98FF98] to-[#B2AC88] bg-clip-text text-transparent">{BRAND_NAME}</span>
-        </motion.h1>
-
-        <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-base md:text-xl text-[#B2AC88] mb-3 md:mb-4 font-medium">{TAGLINE[lang]}</motion.p>
-
-        <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-sm md:text-lg text-slate-400 max-w-lg mx-auto mb-6 md:mb-10">
-          {lang === 'en' ? 'Schedule your pickup for Saturday or Sunday.' : 'சனி அல்லது ஞாயிறு அன்று pickupக்கு முன்பதிவு செய்யுங்கள்.'}
-        </motion.p>
-
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-3 justify-center mb-8 md:mb-16">
-          <Link to="/book"
-            className="group relative inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-semibold rounded-full bg-[#98FF98] text-black overflow-hidden">
-            <span className="relative z-10 flex items-center gap-2">{lang === 'en' ? 'Book Free Pickup' : 'முன்பதிவு'}</span>
-            <motion.div className="absolute inset-0 bg-[#B2AC88]" initial={{ x: '-100%' }} whileHover={{ x: 0 }} transition={{ type: 'tween', duration: 0.3 }} />
-          </Link>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1 }}
-          className="flex flex-wrap justify-center gap-4 md:gap-10">
-          {defaultStats.map((stat, i) => (
-            <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.2 + i * 0.1 }}
-              className="text-center px-4 py-3 rounded-xl bg-white/5 backdrop-blur-md border border-white/10">
-              <div className="text-xl md:text-3xl font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-xs md:text-sm text-slate-500">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <div className="flex justify-center gap-2 mt-8">
-          {heroBgImages.map((_, i) => (
-            <button key={i} onClick={() => setCurrentBg(i)} aria-label={`Background image ${i + 1}`}
-              className={`w-2 h-2 rounded-full transition-all ${i === currentBg ? 'bg-[#98FF98] w-6' : 'bg-white/30'}`} />
-          ))}
-        </div>
-      </div>
-
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
-        <div className="w-6 h-10 rounded-full border-2 border-white/30 flex justify-center pt-2">
-          <motion.div className="w-1.5 h-1.5 rounded-full bg-white/60"
-            animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ScrapCarousel({ lang }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % defaultCategories.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <section className="relative py-12 md:py-20 bg-black overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
-            {lang === 'en' ? 'We Accept All Scrap' : 'எல்லாவிதமான குப்பைகளையும் வாங்குவோம்'}
-          </h2>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
-            {lang === 'en'
-              ? 'From household items to industrial waste. Schedule a pickup and earn money while saving the environment.'
-              : 'வீட்டு பொருட்கள் முதல் தொழிற்பட்டை வரை. pickupக்கு முன்பதிவு செய்து பணம் சம்பாதித்து சுற்றுச்சூழலை பாதுகாக்கவும்.'}
-          </p>
-        </motion.div>
-
-        <div className="relative">
-          <div className="overflow-hidden rounded-3xl">
-            <motion.div className="flex transition-transform duration-500"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
-              {defaultCategories.map((category, index) => (
-                <div key={index} className="w-full flex-shrink-0">
-                  <div className="relative h-[350px] md:h-[480px] rounded-3xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-green-900 to-black" />
-                    <div className="absolute inset-0 bg-black/40" />
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full text-center p-8 md:p-16">
-                      <span className="text-6xl mb-4" role="img" aria-label={category.title}>{category.icon}</span>
-                      <h3 className="text-2xl md:text-4xl font-bold text-white mb-2">{category.title}</h3>
-                      <p className="text-white/80 text-sm md:text-lg max-w-md">{category.description}</p>
-                      <Link to="/book"
-                        className="mt-6 px-6 py-3 rounded-full bg-white/20 backdrop-blur-md text-white font-semibold hover:bg-white/30 transition-colors">
-                        {lang === 'en' ? 'Book Now' : 'முன்பதிவு செய்'}
-                      </Link>
+        <div className="max-w-3xl mx-auto">
+          <div className="relative min-h-[280px] sm:min-h-[240px]">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 100 }}
+                animate={i === activeIndex ? { opacity: 1, x: 0 } : { opacity: 0, x: -100 }}
+                transition={{ duration: 0.5 }}
+                className={`absolute inset-0 ${i === activeIndex ? 'relative' : 'absolute pointer-events-none'}`}
+              >
+                <div className="p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-3xl glass">
+                  <div className="flex items-center gap-1 mb-4">
+                    {Array.from({ length: t.rating }).map((_, s) => (
+                      <Star key={s} className="w-4 h-4 sm:w-5 sm:h-5 fill-scrap-green text-scrap-green" />
+                    ))}
+                  </div>
+                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed mb-6 italic">
+                    &ldquo;{t.text}&rdquo;
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={t.image}
+                      alt={t.name}
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
+                      loading="lazy"
+                    />
+                    <div>
+                      <div className="text-sm sm:text-base font-semibold text-white">{t.name}</div>
+                      <div className="text-xs sm:text-sm text-slate-500">{t.location}</div>
                     </div>
                   </div>
                 </div>
-              ))}
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
 
-          <div className="flex justify-center gap-2 mt-6">
-            {defaultCategories.map((_, index) => (
-              <button key={index} onClick={() => setCurrentIndex(index)} aria-label={`Category ${index + 1}`}
-                className={`w-3 h-3 rounded-full transition-all ${index === currentIndex ? 'bg-[#98FF98] w-8' : 'bg-slate-600'}`} />
+          <div className="flex justify-center gap-2 mt-6 sm:mt-8">
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveIndex(i)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  i === activeIndex ? 'bg-scrap-green w-6' : 'bg-slate-700 hover:bg-slate-600'
+                }`}
+                aria-label={`Testimonial ${i + 1}`}
+              />
             ))}
           </div>
         </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mt-8 md:mt-12">
-          {defaultCategories.map((category, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-              className="p-3 md:p-4 rounded-2xl bg-[#0a150a] border border-[#98FF98]/10 hover:border-[#98FF98]/30 transition-all text-center cursor-pointer"
-              onClick={() => setCurrentIndex(i)} role="button" tabIndex={0} aria-label={category.title}
-              onKeyDown={(e) => e.key === 'Enter' && setCurrentIndex(i)}>
-              <span className="text-2xl md:text-3xl mb-1 block" role="img" aria-hidden="true">{category.icon}</span>
-              <div className="text-xs md:text-sm font-medium text-white">{category.title}</div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );
 }
 
-function Features({ lang }) {
-  return (
-    <section className="relative py-12 md:py-20 lg:py-32 bg-black">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="text-center mb-8 md:mb-16">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
-            {lang === 'en' ? 'Why Choose' : 'ஏன் தேர்வு'} <span className="bg-gradient-to-r from-[#98FF98] to-[#B2AC88] bg-clip-text text-transparent">{BRAND_NAME}</span>?
-          </h2>
-        </motion.div>
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState(null);
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-          {defaultFeatures.map((feature, i) => (
-            <motion.div key={feature.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.1 }} whileHover={{ y: -4 }}
-              className="p-4 md:p-8 rounded-2xl md:rounded-3xl bg-[#0a150a] border border-[#98FF98]/10 hover:border-[#98FF98]/30 transition-all">
-              <h3 className="text-sm md:text-xl font-semibold text-white mb-1 md:mb-2">{feature.title}</h3>
-              <p className="text-xs md:text-sm text-slate-400 mb-1">{feature.description}</p>
-              <p className="text-[#B2AC88] text-xs">{feature.ta}</p>
-            </motion.div>
-          ))}
+  return (
+    <section id="faq" className="relative py-section sm:py-section-lg overflow-hidden">
+      <div className="absolute inset-0 bg-grid pointer-events-none" />
+
+      <div className="relative max-w-3xl mx-auto px-4 sm:px-6">
+        <SectionHeading
+          title="Frequently Asked Questions"
+          subtitle="Everything you need to know about selling scrap with YourScrap."
+        />
+
+        <div className="space-y-3 sm:space-y-4">
+          {faqs.map((faq, i) => {
+            const isOpen = openIndex === i;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="rounded-2xl glass overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  className="w-full flex items-center justify-between p-4 sm:p-6 text-left"
+                >
+                  <span className="text-sm sm:text-base font-medium text-white pr-4">{faq.q}</span>
+                  <ChevronDown
+                    className={`w-4 h-4 sm:w-5 sm:h-5 text-slate-500 shrink-0 transition-transform duration-300 ${
+                      isOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: isOpen ? 'auto' : 0,
+                    opacity: isOpen ? 1 : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <p className="px-4 sm:px-6 pb-4 sm:pb-6 text-sm text-slate-400 leading-relaxed">
+                    {faq.a}
+                  </p>
+                </motion.div>
+              </motion.div>
+            );
+          })}
         </div>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: faqs.map((faq) => ({
+                '@type': 'Question',
+                name: faq.q,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: faq.a,
+                },
+              })),
+            }),
+          }}
+        />
       </div>
     </section>
   );
 }
 
-function HowItWorks({ lang }) {
-  const steps = [
-    { num: '01', title: 'Book Online', description: 'Tell us what scrap you have and pick your preferred slot.', ta: 'ஆன்லைனில் முன்பதிவு' },
-    { num: '02', title: 'We Pick It Up', description: 'Our team arrives at your doorstep at the scheduled time.', ta: 'நாங்கள் எடுப்போம்' },
-    { num: '03', title: 'Get Paid', description: 'Receive payment instantly via UPI or bank transfer.', ta: 'பணம் பெறுங்கள்' },
-  ];
-
+function CTASection() {
   return (
-    <section className="relative py-12 md:py-20 lg:py-32 bg-black">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="text-center mb-8 md:mb-16">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
-            {lang === 'en' ? 'How It Works' : 'இது எப்படி'}
-          </h2>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-          {steps.map((step, i) => (
-            <motion.div key={step.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.2 }}
-              className="p-6 md:p-10 rounded-2xl md:rounded-3xl bg-[#0a150a] border border-[#98FF98]/10 hover:border-[#98FF98]/30 transition-all text-center">
-              <div className="text-4xl md:text-6xl font-black text-[#98FF98]/10 mb-3 md:mb-4">{step.num}</div>
-              <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3">{step.title}</h3>
-              <p className="text-xs md:text-base text-slate-400 mb-2">{step.description}</p>
-              <p className="text-[#B2AC88] text-xs md:text-sm">{step.ta}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Pricing({ lang }) {
-  return (
-    <section className="relative py-12 md:py-20 lg:py-32 bg-[#051005]">
-      <FloatingOrb className="w-48 md:w-72 h-48 md:h-72 bg-[#98FF98]/10 top-1/4 -left-20 md:-left-36" delay={2} />
-      <FloatingOrb className="w-40 md:w-56 h-40 md:h-56 bg-[#B2AC88]/10 bottom-1/4 -right-20 md:-right-36" delay={4} />
-
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="text-center mb-8 md:mb-16">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">
-            {lang === 'en' ? "Today's Rates" : 'இன்றைய விலை'}
-          </h2>
-          <p className="text-slate-400 text-sm md:text-base">
-            {lang === 'en' ? 'Real-time market rates. Updated daily at 9 AM.' : 'நிகழ் நேர விலை.'}
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6">
-          {defaultPrices.map((rate, i) => (
-            <motion.div key={rate.category} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.05 }} whileHover={{ scale: 1.02 }}
-              className="p-4 md:p-6 rounded-xl md:rounded-3xl bg-[#0a150a] border border-[#98FF98]/10 hover:border-[#98FF98]/30 transition-all">
-              <h3 className="text-xs md:text-lg font-semibold text-white mb-1 md:mb-2">{rate.category}</h3>
-              <p className="text-sm md:text-2xl font-bold bg-gradient-to-r from-[#98FF98] to-[#B2AC88] bg-clip-text text-transparent">{rate.price}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CTA({ lang }) {
-  return (
-    <section className="relative py-12 md:py-20 lg:py-32 overflow-hidden">
+    <section className="relative py-section sm:py-section-lg overflow-hidden">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#98FF98] via-[#B2AC88] to-[#98FF98] opacity-95" />
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="absolute -left-1/4 top-0 h-full w-2/3 rotate-6 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-70 animate-[bbw-shine_4.5s_ease-in-out_infinite]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-scrap-green/20 via-scrap-dark to-black" />
+        <div className="absolute inset-0 bg-grid pointer-events-none" />
       </div>
 
-      <style>{`
-        @keyframes bbw-shine {
-          0% { transform: translateX(-30%) rotate(6deg); opacity: 0.0; }
-          25% { opacity: 0.65; }
-          50% { transform: translateX(40%) rotate(6deg); opacity: 0.55; }
-          75% { opacity: 0.25; }
-          100% { transform: translateX(90%) rotate(6deg); opacity: 0.0; }
-        }
-      `}</style>
+      <FloatingOrb className="w-96 h-96 bg-scrap-green/10 left-1/3 top-0" delay={0} />
+      <FloatingOrb className="w-72 h-72 bg-scrap-gold/10 right-1/4 bottom-0" delay={3} />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-10 text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black mb-4 md:mb-6">
-            {lang === 'en' ? 'Ready to Start Earning?' : 'பணம் சம்பாதிக்கத் தயாரா?'}
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-6">
+            <TrendingUp className="w-4 h-4 text-scrap-green" />
+            <span className="text-sm text-scrap-green font-medium">10,000+ Pickups Completed</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 text-balance">
+            Ready to Turn Your Scrap
+            <br />
+            <span className="bg-gradient-to-r from-scrap-green to-scrap-gold bg-clip-text text-transparent">
+              Into Instant Cash?
+            </span>
           </h2>
-          <p className="text-sm md:text-xl text-black/70 mb-6 md:mb-10 max-w-md mx-auto">
-            {lang === 'en' ? 'Join 10,000+ users in Coimbatore. First pickup FREE above 10kg!' : '10,000+ பயனர்கள். முதல் pickup இலவசம்!'}
+
+          <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto mb-8 sm:mb-10 leading-relaxed">
+            Join 10,000+ happy customers in Coimbatore. First pickup free above 10 kg.
+            <br className="hidden sm:block" />
+            Same-day service available. No hidden charges.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
-            <Link to="/book"
-              className="group relative inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-bold rounded-full bg-gradient-to-r from-[#98FF98] to-[#B2AC88] text-black shadow-[0_0_30px_rgba(152,255,152,0.45)] hover:shadow-[0_0_45px_rgba(152,255,152,0.6)] transition-all">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+            <Link
+              to="/book"
+              className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-full bg-scrap-green text-black overflow-hidden shadow-glow-green hover:shadow-glow-green transition-all duration-300"
+            >
               <span className="relative z-10 flex items-center gap-2">
-                {lang === 'en' ? 'Book Pickup Now' : 'முன்பதிவு'}
+                Book Free Pickup Now
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-white/0 via-white/35 to-white/0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 rounded-full" />
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-scrap-green/80 to-emerald-400"
+                initial={{ x: '-100%' }}
+                whileHover={{ x: 0 }}
+                transition={{ type: 'tween', duration: 0.3 }}
+              />
             </Link>
+
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-full glass-strong text-white hover:bg-white/[0.08] transition-all duration-300"
+            >
+              <Phone className="w-4 h-4" />
+              WhatsApp Us
+            </a>
           </div>
         </motion.div>
       </div>
@@ -377,46 +714,46 @@ function CTA({ lang }) {
   );
 }
 
-function Footer() {
+function StickyMobileCTA() {
   return (
-    <footer className="py-6 md:py-10 bg-black border-t border-white/10">
-      <div className="w-full max-w-7xl mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
-          <div className="flex items-center gap-2">
-            <LeafIcon />
-          </div>
-          <div className="flex gap-4 md:gap-6 text-xs md:text-sm text-slate-500">
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
-            <a href="tel:+919080405581" className="hover:text-white transition-colors">Contact</a>
-          </div>
-          <p className="text-xs md:text-sm text-slate-600">© 2026 {BRAND_NAME} | Coimbatore, Tamilnadu</p>
-        </div>
+    <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-black/90 backdrop-blur-xl border-t border-white/[0.03] px-4 py-3">
+      <div className="flex gap-3">
+        <a
+          href={`https://wa.me/${WHATSAPP_NUMBER}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10 text-slate-400 hover:text-white text-sm font-medium transition-colors"
+        >
+          <MessageCircle className="w-4 h-4" />
+          WhatsApp
+        </a>
+        <Link
+          to="/book"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-scrap-green text-black text-sm font-semibold"
+        >
+          Book Free Pickup
+        </Link>
       </div>
-    </footer>
+    </div>
   );
 }
 
 export default function Landing() {
-  const [lang, setLang] = useState('en');
-
   return (
-    <div className="bg-black min-h-screen">
-      <Navbar lang={lang} setLang={setLang} />
-
-      <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noreferrer"
-        className="fixed bottom-6 right-6 z-50 rounded-full bg-[#98FF98] p-4 shadow-lg hover:bg-[#7bdc78] flex items-center justify-center animate-pulse"
-        aria-label="Chat on WhatsApp">
-        {whatsAppIcon}
-      </a>
-
-      <Hero lang={lang} setLang={setLang} />
-      <ScrapCarousel lang={lang} />
-      <Features lang={lang} />
-      <HowItWorks lang={lang} />
-      <Pricing lang={lang} />
-      <CTA lang={lang} />
+    <div className="bg-black min-h-screen pb-16 md:pb-0">
+      <Navbar />
+      <HeroSection />
+      <TrustBadges />
+      <ServicesSection />
+      <StatsSection />
+      <HowItWorksSection />
+      <PricingSection />
+      <TestimonialsSection />
+      <FAQSection />
+      <CTASection />
       <Footer />
+      <WhatsAppButton />
+      <StickyMobileCTA />
     </div>
   );
 }
