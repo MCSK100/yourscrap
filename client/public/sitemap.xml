@@ -2,60 +2,60 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://yourscrap.in/</loc>
+    <loc>https://yourscrap.vercel.app/</loc>
     <lastmod>2026-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://yourscrap.in/" />
-    <xhtml:link rel="alternate" hreflang="ta" href="https://yourscrap.in/ta/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://yourscrap.vercel.app/" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://yourscrap.vercel.app/ta/" />
   </url>
   <url>
-    <loc>https://yourscrap.in/book</loc>
+    <loc>https://yourscrap.vercel.app/book</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/scrap-buyers-coimbatore</loc>
+    <loc>https://yourscrap.vercel.app/scrap-buyers-coimbatore</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/paper-scrap-buyers-coimbatore</loc>
+    <loc>https://yourscrap.vercel.app/paper-scrap-buyers-coimbatore</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/ewaste-collection-coimbatore</loc>
+    <loc>https://yourscrap.vercel.app/ewaste-collection-coimbatore</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/iron-scrap-buyers-coimbatore</loc>
+    <loc>https://yourscrap.vercel.app/iron-scrap-buyers-coimbatore</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/scrap-pickup-peelamedu</loc>
+    <loc>https://yourscrap.vercel.app/scrap-pickup-peelamedu</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/scrap-pickup-rs-puram</loc>
+    <loc>https://yourscrap.vercel.app/scrap-pickup-rs-puram</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/contact</loc>
+    <loc>https://yourscrap.vercel.app/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/privacy</loc>
+    <loc>https://yourscrap.vercel.app/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://yourscrap.in/terms</loc>
+    <loc>https://yourscrap.vercel.app/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

@@ -61,7 +61,7 @@ export default function LocalSeoPage() {
     '@type': 'LocalBusiness',
     name: 'YourScrap',
     description: page.description,
-    url: `https://yourscrap.in/${page.slug}`,
+    url: `https://yourscrap.vercel.app/${page.slug}`,
     telephone: `+91${WHATSAPP_NUMBER}`,
     areaServed: {
       '@type': 'City',
@@ -81,8 +81,8 @@ export default function LocalSeoPage() {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://yourscrap.in/' },
-      { '@type': 'ListItem', position: 2, name: page.h1, item: `https://yourscrap.in/${page.slug}` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://yourscrap.vercel.app/' },
+      { '@type': 'ListItem', position: 2, name: page.h1, item: `https://yourscrap.vercel.app/${page.slug}` },
     ],
   };
 

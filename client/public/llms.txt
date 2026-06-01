@@ -6,7 +6,7 @@
 - **Location:** Coimbatore, Tamilnadu
 - **Services:** Free scrap pickup, scrap buying, recycling service
 - **Phone:** +919080405581
-- **Website:** https://yourscrap.in/
+- **Website:** https://yourscrap.vercel.app/
 
 ## Services Offered
 - Iron Scrap Pickup: ₹18-25/kg
@@ -30,15 +30,15 @@ Coimbatore, Peelamedu, Gandhipuram, RS Puram, Singanallur, Saravanampatti, Ukkad
 - Best market rates guaranteed
 
 ## Key Pages
-- Home: https://yourscrap.in/
-- Book Pickup: https://yourscrap.in/book
-- Scrap Buyers Coimbatore: https://yourscrap.in/scrap-buyers-coimbatore
-- Paper Scrap Buyers: https://yourscrap.in/paper-scrap-buyers-coimbatore
-- E-Waste Collection: https://yourscrap.in/ewaste-collection-coimbatore
-- Iron Scrap Buyers: https://yourscrap.in/iron-scrap-buyers-coimbatore
-- Scrap Pickup Peelamedu: https://yourscrap.in/scrap-pickup-peelamedu
-- Scrap Pickup RS Puram: https://yourscrap.in/scrap-pickup-rs-puram
-- Contact: https://yourscrap.in/contact
+- Home: https://yourscrap.vercel.app/
+- Book Pickup: https://yourscrap.vercel.app/book
+- Scrap Buyers Coimbatore: https://yourscrap.vercel.app/scrap-buyers-coimbatore
+- Paper Scrap Buyers: https://yourscrap.vercel.app/paper-scrap-buyers-coimbatore
+- E-Waste Collection: https://yourscrap.vercel.app/ewaste-collection-coimbatore
+- Iron Scrap Buyers: https://yourscrap.vercel.app/iron-scrap-buyers-coimbatore
+- Scrap Pickup Peelamedu: https://yourscrap.vercel.app/scrap-pickup-peelamedu
+- Scrap Pickup RS Puram: https://yourscrap.vercel.app/scrap-pickup-rs-puram
+- Contact: https://yourscrap.vercel.app/contact
 
 ## Structured Data
 - LocalBusiness schema with detailed service areas

@@ -29,7 +29,7 @@ User-agent: YandexBot
 Allow: /
 
 # Sitemap
-Sitemap: https://yourscrap.in/sitemap.xml
+Sitemap: https://yourscrap.vercel.app/sitemap.xml
 
 # Crawl delay
 Crawl-Delay: 10

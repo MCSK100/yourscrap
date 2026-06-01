@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
-const SITE_URL = 'https://yourscrap.in';
-const DEFAULT_IMAGE = 'https://yourscrap.in/og-scrap.png';
+const SITE_URL = 'https://yourscrap.vercel.app';
+const DEFAULT_IMAGE = 'https://yourscrap.vercel.app/og-scrap.png';
 
 export default function SeoHead({
   title = 'YourScrap - #1 Scrap Pickup Service in Coimbatore | Free Doorstep Collection',
