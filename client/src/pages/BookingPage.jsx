@@ -2,13 +2,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, Phone } from 'lucide-react';
-import axios from 'axios';
+import { supabase } from '../services/supabaseClient';
 import SeoHead from '../components/SeoHead';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const WHATSAPP_NUMBER = '9080405581';
 
 const scrapCategories = [
@@ -83,7 +82,8 @@ export default function BookingPage() {
         preferred_time: form.time,
       };
 
-      await axios.post(`${API_URL}/pickups`, payload);
+      const { error: insertError } = await supabase.from('pickups').insert(payload);
+      if (insertError) throw insertError;
 
       const msg = `Hi YourScrap! I've booked a pickup.%0A%0AName: ${form.name}%0APhone: ${form.phone}%0AAddress: ${form.address}, ${form.area}%0ADate: ${form.date}%0ATime: ${form.time}%0AItems: ${form.items.map((id) => scrapCategories.find((c) => c.id === id)?.label).join(', ')}`;
 

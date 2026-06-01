@@ -5,10 +5,15 @@ import { Menu, X, Phone } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '9080405581';
 
-const navLinks = [
+const baseLinks = [
   { label: 'Home', href: '/' },
   { label: 'Services', href: '#services' },
   { label: 'Prices', href: '#pricing' },
+  { label: 'Contact', href: '/contact' },
+];
+
+const bookingLinks = [
+  { label: 'Home', href: '/' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -16,6 +21,8 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const location = useLocation();
+  const isBookingPage = location.pathname === '/book';
+  const navLinks = isBookingPage ? bookingLinks : baseLinks;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);

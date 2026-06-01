@@ -9,6 +9,7 @@ import WhatsAppButton from '../components/WhatsAppButton';
 const WHATSAPP_NUMBER = '9080405581';
 
 const contactInfo = [
+  { icon: Phone, label: 'Phone', value: '+91 8778000970', href: 'tel:+918770008970' },
   { icon: Phone, label: 'Phone', value: `+91 ${WHATSAPP_NUMBER}`, href: `tel:+91${WHATSAPP_NUMBER}` },
   { icon: MessageCircle, label: 'WhatsApp', value: `+91 ${WHATSAPP_NUMBER}`, href: `https://wa.me/${WHATSAPP_NUMBER}` },
   { icon: MapPin, label: 'Location', value: 'Coimbatore, Tamilnadu' },
