@@ -15,6 +15,9 @@ const footerLinks = {
     { label: 'RS Puram', href: '/scrap-pickup-rs-puram' },
     { label: 'Gandhipuram', href: '/scrap-buyers-coimbatore' },
     { label: 'Saravanampatti', href: '/scrap-buyers-coimbatore' },
+    { label: 'Perur', href: '/scrap-buyers-coimbatore' },
+    { label: 'Kovaipudur', href: '/scrap-buyers-coimbatore' },
+    { label: 'Selvapuram', href: '/scrap-buyers-coimbatore' },
   ],
   company: [
     { label: 'Home', href: '/' },
@@ -54,19 +57,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold text-white mb-4">Services</h4>
-            <ul className="space-y-2.5">
-              {footerLinks.services.map((link) => (
-                <li key={link.label}>
-                  <Link to={link.href} className="text-sm text-slate-500 hover:text-scrap-green transition-colors flex items-center gap-1 group">
-                    <ChevronRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+
 
           <div>
             <h4 className="text-sm font-semibold text-white mb-4">Areas We Serve</h4>

@@ -30,6 +30,3 @@ Allow: /
 
 # Sitemap
 Sitemap: https://yourscrap.vercel.app/sitemap.xml
-
-# Crawl delay
-Crawl-Delay: 10
