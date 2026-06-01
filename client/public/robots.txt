@@ -1,32 +1,4 @@
-# YourScrap - Scrap Pickup Service Coimbatore
 User-agent: *
 Allow: /
 
-# Allow Googlebot to fully crawl
-User-agent: Googlebot
-Allow: /
-
-# Allow AI crawlers
-User-agent: GPTBot
-Allow: /
-User-agent: Claude-Web
-Allow: /
-User-agent: PerplexityBot
-Allow: /
-User-agent: Amazonbot
-Allow: /
-
-# Allow all search engines
-User-agent: Bingbot
-Allow: /
-User-agent: Slurp
-Allow: /
-User-agent: DuckDuckBot
-Allow: /
-User-agent: Baiduspider
-Allow: /
-User-agent: YandexBot
-Allow: /
-
-# Sitemap
 Sitemap: https://yourscrap.vercel.app/sitemap.xml
