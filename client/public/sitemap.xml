@@ -13,10 +13,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yourscrap.vercel.app/admin</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://yourscrap.vercel.app/iron-scrap</loc>
     <priority>0.7</priority>
   </url>
@@ -31,6 +27,30 @@
   <url>
     <loc>https://yourscrap.vercel.app/scrap-buyers</loc>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://yourscrap.vercel.app/scrap-buyers-coimbatore</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yourscrap.vercel.app/paper-scrap-buyers-coimbatore</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yourscrap.vercel.app/ewaste-collection-coimbatore</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yourscrap.vercel.app/iron-scrap-buyers-coimbatore</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yourscrap.vercel.app/scrap-pickup-peelamedu</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yourscrap.vercel.app/scrap-pickup-rs-puram</loc>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yourscrap.vercel.app/contact</loc>

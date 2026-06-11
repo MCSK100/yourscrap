@@ -14,6 +14,7 @@ import Footer from '../components/Footer';
 import FloatingParticles from '../components/FloatingParticles';
 import AnimatedCounter from '../components/AnimatedCounter';
 import WhatsAppButton from '../components/WhatsAppButton';
+import SeoHead from '../components/SeoHead';
 import { services } from '../data/services';
 import { testimonials } from '../data/testimonials';
 
@@ -623,23 +624,7 @@ function FAQSection() {
           })}
         </div>
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'FAQPage',
-              mainEntity: faqs.map((faq) => ({
-                '@type': 'Question',
-                name: faq.q,
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: faq.a,
-                },
-              })),
-            }),
-          }}
-        />
+
       </div>
     </section>
   );
@@ -741,6 +726,7 @@ function StickyMobileCTA() {
 export default function Landing() {
   return (
     <div className="bg-black min-h-screen pb-16 md:pb-0">
+      <SeoHead />
       <Navbar />
       <HeroSection />
       <TrustBadges />

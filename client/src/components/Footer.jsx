@@ -42,7 +42,7 @@ export default function Footer() {
               Coimbatore's most trusted scrap pickup platform. Turn your old scrap into instant cash with free doorstep pickup.
             </p>
             <div className="space-y-2 text-sm text-slate-500">
-              <a href={`tel:+918770008970`} className="flex items-center gap-2 hover:text-scrap-green transition-colors">
+              <a href={`tel:+918778000970`} className="flex items-center gap-2 hover:text-scrap-green transition-colors">
                 <Phone className="w-3.5 h-3.5" />
                 +91 8778000970
               </a>

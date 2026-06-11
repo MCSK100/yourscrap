@@ -10,27 +10,7 @@ import WhatsAppButton from '../components/WhatsAppButton';
 
 const WHATSAPP_NUMBER = '9080405581';
 
-function FAQSchema({ faqs }) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: faqs.map((faq) => ({
-            '@type': 'Question',
-            name: faq.question,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: faq.answer,
-            },
-          })),
-        }),
-      }}
-    />
-  );
-}
+
 
 const areas = [
   { name: 'Peelamedu', slug: '/scrap-pickup-peelamedu' },
@@ -56,27 +36,6 @@ export default function LocalSeoPage() {
     );
   }
 
-  const localBusinessSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    name: 'YourScrap',
-    description: page.description,
-    url: `https://yourscrap.vercel.app/${page.slug}`,
-    telephone: `+91${WHATSAPP_NUMBER}`,
-    areaServed: {
-      '@type': 'City',
-      name: page.area,
-      sameAs: `https://en.wikipedia.org/wiki/Coimbatore`,
-    },
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: page.area,
-      addressRegion: 'Tamilnadu',
-      addressCountry: 'IN',
-    },
-    priceRange: '₹',
-  };
-
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -86,6 +45,19 @@ export default function LocalSeoPage() {
     ],
   };
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: page.faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
     <div className="bg-black min-h-screen">
       <SeoHead
@@ -93,12 +65,10 @@ export default function LocalSeoPage() {
         description={page.description}
         keywords={page.keywords}
         canonical={`/${page.slug}`}
-        schema={[localBusinessSchema, breadcrumbSchema]}
+        schema={[breadcrumbSchema, faqSchema]}
       />
 
       <Navbar />
-
-      <FAQSchema faqs={page.faqs} />
 
       <section className="relative pt-32 pb-16 sm:pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-grid pointer-events-none" />
